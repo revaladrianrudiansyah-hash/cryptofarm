@@ -3,207 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm Elite</title>
+    <title>SeedFarm Pro Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="//libtl.com/sdk.js" data-zone="10426674" data-sdk="show_10426674"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         body { background-color: #05080f; color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Sidebar Menu */
-        #sidebar { transition: transform 0.3s ease; transform: translateX(-100%); }
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-100%); }
         #sidebar.open { transform: translateX(0); }
-        
-        .farm-slot { aspect-ratio: 1/1; border-radius: 24px; position: relative; overflow: hidden; }
-        .status-badge { font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 6px; position: absolute; top: 10px; right: 10px; }
-        .btn-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); transition: 0.2s; }
-        .btn-gradient:active { transform: scale(0.95); }
+        .btn-press:active { transform: scale(0.95); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .status-badge { font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 6px; position: absolute; top: 12px; right: 12px; }
+        .lock-overlay { background: rgba(5, 8, 15, 0.8); backdrop-filter: blur(4px); border-radius: 2rem; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-28">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[60] hidden opacity-0 transition-opacity" onclick="toggleSidebar()"></div>
-
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity" onclick="toggleSidebar()"></div>
     <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-[#0a0f1a] z-[70] p-6 shadow-2xl border-r border-white/5">
         <div class="flex items-center gap-4 mb-10 pb-6 border-b border-white/5">
-            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center"><i class="fas fa-leaf text-black"></i></div>
-            <h2 class="font-bold">Menu Settings</h2>
+            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black"><i class="fas fa-leaf"></i></div>
+            <h2 class="font-bold">Game Menu</h2>
         </div>
-        
         <nav class="space-y-2">
-            <button onclick="tg.showAlert('Affiliate Program: Earn 10% from friend harvest')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fas fa-users-viewfinder text-emerald-500"></i> Affiliate Program
+            <button onclick="tg.showAlert('Affiliate: Share your link to get 10% bonus!')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
+                <i class="fas fa-users text-emerald-500"></i> Affiliate Program
             </button>
-            <button onclick="tg.showAlert('Exchange Offer: Swap coins to USDT coming soon')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fas fa-arrows-rotate text-blue-500"></i> Exchange Offer
+            <button onclick="tg.showAlert('Exchange: Soon you can swap coins to USDT!')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
+                <i class="fas fa-rotate text-blue-500"></i> Exchange Offer
             </button>
-            <button onclick="showTab('home')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fas fa-id-card text-purple-500"></i> Profil Saya
-            </button>
-            <a href="https://t.me/your_channel" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
+            <a href="#" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
                 <i class="fab fa-telegram text-sky-500"></i> Telegram Channel
             </a>
-            <div class="pt-6 mt-6 border-t border-white/5 space-y-2 opacity-60">
-                <button class="text-[11px] block p-2">Privacy Policy</button>
-                <button class="text-[11px] block p-2">Terms of Use</button>
-                <button class="text-[11px] block p-2">Game Rule</button>
+            <div class="pt-6 mt-6 border-t border-white/5 space-y-1 opacity-50 text-[10px]">
+                <p class="p-2">Privacy Policy</p>
+                <p class="p-2">Terms of Use</p>
+                <p class="p-2">Game Rule v1.0</p>
             </div>
         </nav>
     </aside>
 
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-[#05080f]/80 backdrop-blur-md z-50">
-        <button onclick="toggleSidebar()" class="w-12 h-12 glass rounded-2xl flex items-center justify-center">
-            <i class="fas fa-bars-staggered text-emerald-400"></i>
+    <header class="p-5 flex justify-between items-center sticky top-0 bg-[#05080f]/90 backdrop-blur-xl z-50">
+        <button onclick="toggleSidebar()" class="w-11 h-11 glass rounded-2xl flex items-center justify-center text-emerald-400">
+            <i class="fas fa-bars-staggered"></i>
         </button>
-        <div class="flex items-center gap-2 glass px-4 py-2 rounded-2xl border-emerald-500/20">
-            <i class="fas fa-coins text-yellow-500 text-xs"></i>
-            <span id="top-balance" class="font-mono font-black text-emerald-400 tracking-tighter">0</span>
+        <div class="glass px-4 py-2 rounded-2xl border-emerald-500/20 flex items-center gap-2">
+            <i class="fas fa-coins text-yellow-500"></i>
+            <span id="top-balance" class="font-mono font-black text-emerald-400">0</span>
         </div>
     </header>
 
     <main class="px-6">
 
-        <div id="farming" class="tab-content active space-y-6">
-            <div class="flex justify-between items-end mb-4">
-                <div>
-                    <h2 class="text-xl font-extrabold uppercase tracking-tighter">Farming Area</h2>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Production Unit 01</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Stock</p>
-                    <span class="text-xs font-mono font-bold text-emerald-400"><span id="harvest-counter">0</span> / 40</span>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="farm-slot glass border-t-4 border-emerald-500">
-                    <span class="status-badge bg-emerald-500 text-black">READY</span>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center pt-4">
-                        <span class="text-5xl mb-2 drop-shadow-2xl">🍌</span>
-                        <p class="text-[10px] font-black uppercase text-gray-400">Banana Tree</p>
-                        <button onclick="triggerAd('HARVEST')" class="btn-gradient mt-4 px-6 py-2 rounded-xl text-[10px] font-black uppercase text-black">Harvest</button>
+        <div id="home" class="tab-content active space-y-5">
+            <div class="glass p-6 rounded-[2.5rem] relative overflow-hidden">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-green-900 rounded-2xl flex items-center justify-center text-2xl">👤</div>
+                    <div>
+                        <h2 id="displayUser" class="font-black text-white">@Username</h2>
+                        <p id="displayId" class="text-[9px] text-gray-500 font-mono">ID: #--------</p>
                     </div>
                 </div>
-                <div class="farm-slot glass border-dashed border-2 border-white/5 opacity-40 grayscale">
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <i class="fas fa-lock text-2xl mb-2"></i>
-                        <p class="text-[9px] font-bold uppercase">Lvl 15 Lock</p>
+                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-center">
+                    <div>
+                        <p class="text-[8px] text-gray-500 uppercase font-black">Total Earned</p>
+                        <p id="stat-earn" class="font-bold text-emerald-400">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[8px] text-gray-500 uppercase font-black">Withdrawals</p>
+                        <p class="font-bold text-white">0</p>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <button onclick="triggerAd('DAILY')" class="glass p-5 rounded-3xl text-left relative overflow-hidden">
-                    <div class="text-blue-500 mb-2"><i class="fas fa-gift"></i></div>
-                    <p class="text-[10px] font-black uppercase">Daily Box</p>
-                    <p id="timer-daily" class="text-[9px] text-gray-500 font-mono mt-1">CLAIM</p>
-                </button>
-                <button onclick="triggerAd('HOURLY')" class="glass p-5 rounded-3xl text-left relative overflow-hidden">
-                    <div class="text-purple-500 mb-2"><i class="fas fa-bolt"></i></div>
-                    <p class="text-[10px] font-black uppercase">Hourly Drop</p>
-                    <p id="timer-hourly" class="text-[9px] text-gray-500 font-mono mt-1">CLAIM</p>
-                </button>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍌</span><div><p class="text-[8px] font-black text-gray-500">BANANA</p><p id="asset-banana" class="text-xs font-bold">0</p></div></div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍊</span><div><p class="text-[8px] font-black text-gray-500">ORANGE</p><p id="asset-orange" class="text-xs font-bold">0</p></div></div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍎</span><div><p class="text-[8px] font-black text-gray-500">APPLE</p><p id="asset-apple" class="text-xs font-bold">0</p></div></div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🥭</span><div><p class="text-[8px] font-black text-gray-500">MANGO</p><p id="asset-mangga" class="text-xs font-bold">0</p></div></div>
             </div>
-        </div>
 
-        <div id="shop" class="tab-content space-y-6">
-            <h2 class="text-xl font-extrabold uppercase tracking-tighter">Official Shop</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <div class="glass p-4 rounded-3xl flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">💧</div>
-                        <div>
-                            <p class="text-xs font-bold uppercase">Super Fertilizer</p>
-                            <p class="text-[10px] text-gray-500">Speed up growth 2x</p>
-                        </div>
-                    </div>
-                    <button class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-bold">500 PTS</button>
-                </div>
-                <div class="glass p-4 rounded-3xl flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-2xl">🚜</div>
-                        <div>
-                            <p class="text-xs font-bold uppercase">Auto-Harvester</p>
-                            <p class="text-[10px] text-gray-500">Collect coins automatically</p>
-                        </div>
-                    </div>
-                    <button class="bg-blue-600 px-4 py-2 rounded-xl text-[10px] font-bold">2,500 PTS</button>
+            <div class="glass p-6 rounded-[2.5rem] border-t-2 border-emerald-500/20 text-center">
+                <p class="text-[9px] font-black text-gray-500 uppercase mb-4">Last 3 Activities</p>
+                <div id="activity-list" class="space-y-2 text-[10px]">
+                    <div class="flex justify-between opacity-50 italic"><span>No recent activity...</span></div>
                 </div>
             </div>
         </div>
 
-        <div id="plan" class="tab-content space-y-6">
-            <h2 class="text-xl font-extrabold uppercase tracking-tighter text-center">Membership Plans</h2>
-            <div class="space-y-4">
-                <div class="glass p-6 rounded-[2.5rem] border-l-4 border-emerald-500 flex justify-between items-center">
+        <div id="farming" class="tab-content space-y-5">
+            <div class="glass p-5 rounded-[2.5rem] border-b-4 border-blue-500 bg-blue-500/5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400"><i class="fas fa-droplet"></i></div>
                     <div>
-                        <h3 class="font-black text-emerald-500 uppercase tracking-widest text-xs">Basic Plan</h3>
-                        <p class="text-[10px] text-gray-500 mt-1">✓ Normal Production<br>✓ Standard Withdrawal</p>
+                        <p class="text-[9px] font-black text-white uppercase">Daily Water</p>
+                        <p id="timer-daily" class="text-[8px] text-blue-400 font-mono">READY</p>
                     </div>
-                    <span class="text-[10px] font-bold bg-emerald-500/20 text-emerald-500 px-3 py-1 rounded-full border border-emerald-500/20 uppercase">Active</span>
                 </div>
-                
-                <div class="glass p-6 rounded-[2.5rem] border-l-4 border-blue-500 flex justify-between items-center opacity-70">
-                    <div>
-                        <h3 class="font-black text-blue-500 uppercase tracking-widest text-xs">Master Plan</h3>
-                        <p class="text-[10px] text-gray-500 mt-1">✓ 2x Yield Production<br>✓ Low Withdrawal Fee</p>
-                    </div>
-                    <button class="text-[10px] font-bold bg-blue-600 px-4 py-2 rounded-xl uppercase">Upgrade</button>
-                </div>
+                <button onclick="triggerAd('DAILY')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase">Use</button>
             </div>
-        </div>
 
-        <div id="home" class="tab-content space-y-6">
-            <div class="glass p-8 rounded-[2.5rem] text-center mb-6">
-                <p class="text-[10px] font-bold text-gray-500 uppercase mb-2">Total Coin Balance</p>
-                <h1 id="total-coin" class="text-4xl font-black text-white">0</h1>
-            </div>
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="tg.showAlert('Deposit Coming Soon!')" class="p-4 rounded-3xl bg-blue-600 text-white font-black uppercase text-[10px]">Deposit</button>
-                <button onclick="tg.showAlert('Minimal withdrawal 10,000 pts')" class="p-4 rounded-3xl bg-emerald-600 text-black font-black uppercase text-[10px]">Withdraw</button>
+                <div class="glass rounded-[2rem] p-5 text-center relative border-t-4 border-emerald-500">
+                    <span class="status-badge bg-emerald-500 text-black">FREE</span>
+                    <div class="text-4xl my-3">🍌</div>
+                    <p class="text-[9px] font-black text-gray-500 uppercase">Pisang</p>
+                    <p class="text-[10px] text-emerald-400 font-mono mb-3">30 Pts <span class="booster-label hidden text-blue-400">+6</span></p>
+                    <button onclick="triggerAd('BANANA')" class="w-full py-2.5 bg-emerald-600 text-black font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                </div>
+
+                <div id="slot-jeruk" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
+                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
+                    <div class="text-4xl my-3">🍊</div>
+                    <p class="text-[9px] font-black text-gray-500">Jeruk</p>
+                    <button onclick="triggerAd('ORANGE')" class="hidden w-full py-2.5 bg-orange-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                </div>
+
+                <div id="slot-apel" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
+                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
+                    <div class="text-4xl my-3">🍎</div>
+                    <p class="text-[9px] font-black text-gray-500">Apel</p>
+                    <button onclick="triggerAd('APPLE')" class="hidden w-full py-2.5 bg-red-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                </div>
+
+                <div id="slot-mangga" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
+                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
+                    <div class="text-4xl my-3">🥭</div>
+                    <p class="text-[9px] font-black text-gray-500">Mangga</p>
+                    <button onclick="triggerAd('MANGO')" class="hidden w-full py-2.5 bg-yellow-600 text-black font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                </div>
             </div>
-            
-            <div class="glass p-6 rounded-[2rem] space-y-4 text-xs">
-                <div class="flex justify-between border-b border-white/5 pb-2">
-                    <span class="text-gray-500 uppercase font-bold text-[9px]">Player ID</span>
-                    <span id="displayId" class="font-mono">#-------</span>
+
+            <button onclick="triggerAd('HOURLY')" class="glass p-5 rounded-[2.5rem] w-full border-l-4 border-purple-500 bg-purple-500/5 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400 animate-spin"><i class="fas fa-spinner"></i></div>
+                    <div class="text-left">
+                        <p class="text-[9px] font-black text-white uppercase">Lucky Roulette</p>
+                        <p id="timer-hourly" class="text-[8px] text-purple-400 font-mono">SPIN NOW</p>
+                    </div>
                 </div>
-                <div class="flex justify-between border-b border-white/5 pb-2">
-                    <span class="text-gray-500 uppercase font-bold text-[9px]">Username</span>
-                    <span id="displayUser">@user</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-500 uppercase font-bold text-[9px]">Join Date</span>
-                    <span class="text-emerald-500 font-bold">07.01.2026</span>
-                </div>
+                <i class="fas fa-circle-play text-xl text-purple-500"></i>
+            </button>
+        </div>
+
+        <div id="shop" class="tab-content space-y-5">
+            <h2 class="text-xl font-black uppercase">Booster Shop</h2>
+            <div class="glass p-5 rounded-3xl flex items-center justify-between">
+                <div class="flex items-center gap-3"><span>🧪</span><div><p class="text-[10px] font-black">FERTILIZER</p><p class="text-[8px] text-gray-500">Harvest x2 Next Panen</p></div></div>
+                <button onclick="buyItem('FERT', 500)" class="bg-white text-black px-4 py-1.5 rounded-lg font-black text-[9px]">500 PT</button>
+            </div>
+            <div class="glass p-5 rounded-3xl flex items-center justify-between opacity-50">
+                <div class="flex items-center gap-3"><span>🤖</span><div><p class="text-[10px] font-black">AUTO-DRONE</p><p class="text-[8px] text-gray-500">Passive Income 1h</p></div></div>
+                <button class="bg-white/10 text-white px-4 py-1.5 rounded-lg font-black text-[9px]">2.5k PT</button>
+            </div>
+        </div>
+
+        <div id="plan" class="tab-content space-y-4">
+            <h2 class="text-xl font-black uppercase text-center">Membership</h2>
+            <div class="glass p-5 rounded-[2rem] border-l-4 border-emerald-500 flex justify-between items-center">
+                <div><h4 class="text-[10px] font-black text-emerald-500">BASIC</h4><p class="text-[8px] text-gray-500">Buka Jeruk + 1.1x Multiplier</p></div>
+                <button id="plan-basic" onclick="buyPlan('BASIC', 5000)" class="bg-emerald-600 text-black px-4 py-2 rounded-xl font-black text-[9px]">5k PT</button>
+            </div>
+            <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500 flex justify-between items-center">
+                <div><h4 class="text-[10px] font-black text-blue-500">PRO</h4><p class="text-[8px] text-gray-500">Buka Apel + 1.2x Multiplier</p></div>
+                <button id="plan-pro" onclick="buyPlan('PRO', 15000)" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-black text-[9px]">15k PT</button>
+            </div>
+            <div class="glass p-5 rounded-[2rem] border-l-4 border-yellow-500 flex justify-between items-center">
+                <div><h4 class="text-[10px] font-black text-yellow-500">MASTER</h4><p class="text-[8px] text-gray-500">All Slots + 1.5x Multiplier</p></div>
+                <button id="plan-master" onclick="buyPlan('MASTER', 50000)" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-black text-[9px]">50k PT</button>
             </div>
         </div>
 
     </main>
 
-    <nav class="fixed bottom-6 left-6 right-6 h-20 glass rounded-[2.5rem] flex justify-around items-center z-50 border-white/10">
-        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-house"></i>
-            <span class="text-[8px] font-bold uppercase">Main</span>
+    <nav class="fixed bottom-6 left-6 right-6 h-18 glass rounded-[2rem] flex justify-around items-center z-[55] border-white/10 shadow-2xl">
+        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-emerald-500">
+            <i class="fas fa-user-circle text-lg"></i><span class="text-[7px] font-black uppercase">Profile</span>
         </button>
-        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-emerald-500">
-            <i class="fas fa-seedling"></i>
-            <span class="text-[8px] font-bold uppercase">Farm</span>
+        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-wheat-awn text-lg"></i><span class="text-[7px] font-black uppercase">Farm</span>
         </button>
         <button onclick="showTab('shop', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-bag-shopping"></i>
-            <span class="text-[8px] font-bold uppercase">Shop</span>
+            <i class="fas fa-shop text-lg"></i><span class="text-[7px] font-black uppercase">Shop</span>
         </button>
         <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-shield-halved"></i>
-            <span class="text-[8px] font-bold uppercase">Plan</span>
+            <i class="fas fa-crown text-lg"></i><span class="text-[7px] font-black uppercase">Plan</span>
         </button>
     </nav>
 
@@ -211,7 +204,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        // Konfigurasi Firebase (Tetap pakai punya kamu)
         const firebaseConfig = {
             apiKey: "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
             authDomain: "cryptofarm-bd14a.firebaseapp.com",
@@ -227,88 +219,134 @@
         const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504";
         const userRef = doc(db, "users", userId);
 
-        let lastDaily = 0, lastHourly = 0, harvestProgress = 40;
+        let lastDaily = 0, lastHourly = 0;
 
-        // UI TAB CONTROLLER
+        // UI SYSTEM
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-emerald-500', 'text-gray-500'));
             if(btn) btn.classList.replace('text-gray-500', 'text-emerald-500');
-            toggleSidebar(true); // Close sidebar on nav
+            toggleSidebar(true);
         };
 
-        // SIDEBAR CONTROLLER
         window.toggleSidebar = (forceClose = false) => {
-            const side = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            if(side.classList.contains('open') || forceClose) {
-                side.classList.remove('open');
-                overlay.classList.add('hidden');
-                overlay.style.opacity = "0";
+            const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
+            if(s.classList.contains('open') || forceClose) {
+                s.classList.remove('open'); o.classList.add('hidden');
             } else {
-                side.classList.add('open');
-                overlay.classList.remove('hidden');
-                setTimeout(() => overlay.style.opacity = "1", 10);
+                s.classList.add('open'); o.classList.remove('hidden');
             }
         };
 
+        // LOAD DATA
         async function loadData() {
             const snap = await getDoc(userRef);
-            if(!snap.exists()) await setDoc(userRef, { balance: 0, lastDaily: 0, lastHourly: 0 });
+            if(!snap.exists()) {
+                await setDoc(userRef, { balance: 0, plan: 'FREE', banana_count: 0, orange_count: 0, apple_count: 0, mangga_count: 0, total_earned: 0 });
+            }
             const d = snap.data();
             lastDaily = d.lastDaily || 0;
             lastHourly = d.lastHourly || 0;
-            document.getElementById('displayId').innerText = "#" + userId;
+
+            document.getElementById('displayId').innerText = "ID: #" + userId;
             document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-            document.getElementById('total-coin').innerText = Math.floor(d.balance || 0).toLocaleString();
-            document.getElementById('top-balance').innerText = Math.floor(d.balance || 0).toLocaleString();
+            document.getElementById('top-balance').innerText = Math.floor(d.balance).toLocaleString();
+            document.getElementById('total-coin').innerText = Math.floor(d.balance).toLocaleString();
+            document.getElementById('stat-earn').innerText = (d.total_earned || 0).toLocaleString();
+            
+            document.getElementById('asset-banana').innerText = d.banana_count || 0;
+            document.getElementById('asset-orange').innerText = d.orange_count || 0;
+            document.getElementById('asset-apple').innerText = d.apple_count || 0;
+            document.getElementById('asset-mangga').innerText = d.mangga_count || 0;
+
+            updateGameAccess(d.plan || 'FREE', lastDaily);
         }
 
-        // MONETAG AD TRIGGER
+        function updateGameAccess(plan, daily) {
+            const isWater = (Date.now() - daily) < 86400000;
+            document.querySelectorAll('.booster-label').forEach(l => isWater ? l.classList.remove('hidden') : l.classList.add('hidden'));
+
+            const unlock = (id) => {
+                const el = document.getElementById(id);
+                el.classList.remove('opacity-40', 'grayscale', 'border-dashed');
+                el.querySelector('.lock-overlay').classList.add('hidden');
+                el.querySelector('button').classList.remove('hidden');
+            };
+
+            if(plan === 'BASIC' || plan === 'PRO' || plan === 'MASTER') unlock('slot-jeruk');
+            if(plan === 'PRO' || plan === 'MASTER') unlock('slot-apel');
+            if(plan === 'MASTER') unlock('slot-mangga');
+            
+            ['basic', 'pro', 'master'].forEach(p => {
+                const b = document.getElementById('plan-'+p);
+                if(plan === p.toUpperCase()) { b.innerText = "ACTIVE"; b.disabled = true; b.style.opacity = "0.5"; }
+            });
+        }
+
+        // AD & REWARD SYSTEM
         window.triggerAd = (type) => {
             const now = Date.now();
             if(type === 'DAILY' && now - lastDaily < 86400000) return;
             if(type === 'HOURLY' && now - lastHourly < 3600000) return;
-            if(type === 'HARVEST' && harvestProgress < 40) return;
 
-            tg.showConfirm(`Claim reward for ${type}?`, (ok) => {
-                if(ok) {
-                    if (typeof show_10426674 !== 'undefined') {
-                        show_10426674().then(() => { giveReward(type); });
-                    }
+            tg.showConfirm(`Watch ad to claim ${type}?`, (ok) => {
+                if(ok && typeof show_10426674 !== 'undefined') {
+                    show_10426674().then(() => giveReward(type));
                 }
             });
         };
 
         async function giveReward(type) {
-            let amt = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
-            let upd = { balance: increment(amt) };
-            if(type === 'DAILY') upd.lastDaily = Date.now();
-            if(type === 'HOURLY') upd.lastHourly = Date.now();
-            if(type === 'HARVEST') harvestProgress = 0;
+            const d = (await getDoc(userRef)).data();
+            const isWater = (Date.now() - (d.lastDaily || 0)) < 86400000;
+            let mult = d.plan === 'MASTER' ? 1.5 : d.plan === 'PRO' ? 1.2 : d.plan === 'BASIC' ? 1.1 : 1.0;
+            let water = isWater ? 1.2 : 1.0;
+
+            let upd = {};
+            if(type === 'BANANA') {
+                let amt = Math.floor(30 * mult * water);
+                upd = { balance: increment(amt), banana_count: increment(1), total_earned: increment(amt) };
+            } else if(type === 'ORANGE') {
+                let amt = Math.floor(60 * mult * water);
+                upd = { balance: increment(amt), orange_count: increment(1), total_earned: increment(amt) };
+            } else if(type === 'DAILY') {
+                upd = { lastDaily: Date.now() };
+            } else if(type === 'HOURLY') {
+                let r = Math.floor(Math.random() * 50) + 10;
+                upd = { balance: increment(r), lastHourly: Date.now(), total_earned: increment(r) };
+            }
+
             await updateDoc(userRef, upd);
-            tg.showAlert("Coins added!");
+            tg.showAlert("Reward Claimed!");
             loadData();
         }
 
+        window.buyPlan = async (name, price) => {
+            const d = (await getDoc(userRef)).data();
+            if(d.balance < price) return tg.showAlert("Insufficient coins!");
+            tg.showConfirm(`Upgrade to ${name}?`, async (ok) => {
+                if(ok) {
+                    await updateDoc(userRef, { balance: increment(-price), plan: name });
+                    loadData();
+                }
+            });
+        };
+
         setInterval(() => {
-            if (harvestProgress < 40) harvestProgress += 0.1;
-            document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
-            updateCD('DAILY', 'timer-daily', 86400000, lastDaily);
-            updateCD('HOURLY', 'timer-hourly', 3600000, lastHourly);
+            const now = Date.now();
+            updateTimer('timer-daily', 86400000, lastDaily, "READY");
+            updateTimer('timer-hourly', 3600000, lastHourly, "SPIN NOW");
         }, 1000);
 
-        function updateCD(type, textId, wait, last) {
-            const el = document.getElementById(textId);
+        function updateTimer(id, wait, last, readyText) {
+            const el = document.getElementById(id);
             const diff = Date.now() - last;
-            if (diff < wait) {
-                const rem = wait - diff;
-                const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+            if(diff < wait) {
+                const r = wait - diff;
+                const h = Math.floor(r/3600000), m = Math.floor((r%3600000)/60000), s = Math.floor((r%60000)/1000);
                 el.innerText = `${h}h ${m}m ${s}s`;
-            } else {
-                el.innerText = "CLAIM";
-            }
+            } else { el.innerText = readyText; }
         }
 
         tg.expand();
