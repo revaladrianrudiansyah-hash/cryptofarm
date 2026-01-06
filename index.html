@@ -17,60 +17,39 @@
         .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(-100%); }
-        #sidebar.open { transform: translateX(0); }
         .btn-press:active { transform: scale(0.95); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .status-badge { font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 6px; position: absolute; top: 12px; right: 12px; }
-        .lock-overlay { background: rgba(5, 8, 15, 0.8); backdrop-filter: blur(4px); border-radius: 2rem; }
+        .status-badge { font-size: 7px; font-weight: 800; padding: 2px 6px; border-radius: 6px; position: absolute; top: 12px; right: 12px; }
+        .lock-overlay { background: rgba(5, 8, 15, 0.85); backdrop-filter: blur(4px); border-radius: 2rem; z-index: 10; }
     </style>
 </head>
-<body class="pb-28">
-
-    <div id="sidebar-overlay" class="fixed inset-0 bg-black/60 z-[60] hidden transition-opacity" onclick="toggleSidebar()"></div>
-    <aside id="sidebar" class="fixed top-0 left-0 bottom-0 w-72 bg-[#0a0f1a] z-[70] p-6 shadow-2xl border-r border-white/5">
-        <div class="flex items-center gap-4 mb-10 pb-6 border-b border-white/5">
-            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black"><i class="fas fa-leaf"></i></div>
-            <h2 class="font-bold">Game Menu</h2>
-        </div>
-        <nav class="space-y-2">
-            <button onclick="tg.showAlert('Affiliate: Share your link to get 10% bonus!')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fas fa-users text-emerald-500"></i> Affiliate Program
-            </button>
-            <button onclick="tg.showAlert('Exchange: Soon you can swap coins to USDT!')" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fas fa-rotate text-blue-500"></i> Exchange Offer
-            </button>
-            <a href="#" class="w-full flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-sm transition text-gray-400">
-                <i class="fab fa-telegram text-sky-500"></i> Telegram Channel
-            </a>
-            <div class="pt-6 mt-6 border-t border-white/5 space-y-1 opacity-50 text-[10px]">
-                <p class="p-2">Privacy Policy</p>
-                <p class="p-2">Terms of Use</p>
-                <p class="p-2">Game Rule v1.0</p>
-            </div>
-        </nav>
-    </aside>
+<body class="pb-32">
 
     <header class="p-5 flex justify-between items-center sticky top-0 bg-[#05080f]/90 backdrop-blur-xl z-50">
-        <button onclick="toggleSidebar()" class="w-11 h-11 glass rounded-2xl flex items-center justify-center text-emerald-400">
-            <i class="fas fa-bars-staggered"></i>
-        </button>
-        <div class="glass px-4 py-2 rounded-2xl border-emerald-500/20 flex items-center gap-2">
-            <i class="fas fa-coins text-yellow-500"></i>
-            <span id="top-balance" class="font-mono font-black text-emerald-400">0</span>
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-black font-black text-xl italic">SF</div>
+            <h1 class="text-xs font-black tracking-widest uppercase opacity-50">SeedFarm<br>Pro Elite</h1>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="openWithdraw()" class="w-10 h-10 glass rounded-xl flex items-center justify-center text-blue-400 active:scale-90 transition-all border-blue-500/20">
+                <i class="fas fa-wallet"></i>
+            </button>
+            <div class="glass px-4 py-2 rounded-2xl border-emerald-500/20 flex items-center gap-2 shadow-lg shadow-emerald-500/5">
+                <i class="fas fa-coins text-yellow-500"></i>
+                <span id="top-balance" class="font-mono font-black text-emerald-400">0</span>
+            </div>
         </div>
     </header>
 
-    <main class="px-6">
+    <main class="px-6 space-y-6">
 
         <div id="home" class="tab-content active space-y-5">
-            <div class="glass p-6 rounded-[2.5rem] relative overflow-hidden">
+            <div class="glass p-6 rounded-[2.5rem] relative overflow-hidden border-b-4 border-emerald-500/30">
                 <div class="flex items-center gap-4 mb-6">
-                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-green-900 rounded-2xl flex items-center justify-center text-2xl">👤</div>
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-400 to-green-900 rounded-2xl flex items-center justify-center text-2xl shadow-inner">👤</div>
                     <div>
-                        <h2 id="displayUser" class="font-black text-white">@Username</h2>
-                        <p id="displayId" class="text-[9px] text-gray-500 font-mono">ID: #--------</p>
+                        <h2 id="displayUser" class="font-black text-white text-lg tracking-tight">@Username</h2>
+                        <p id="displayId" class="text-[9px] text-gray-500 font-mono tracking-widest uppercase">ID: #--------</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5 text-center">
@@ -80,114 +59,247 @@
                     </div>
                     <div>
                         <p class="text-[8px] text-gray-500 uppercase font-black">Withdrawals</p>
-                        <p class="font-bold text-white">0</p>
+                        <p id="stat-wd" class="font-bold text-white">0</p>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍌</span><div><p class="text-[8px] font-black text-gray-500">BANANA</p><p id="asset-banana" class="text-xs font-bold">0</p></div></div>
-                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍊</span><div><p class="text-[8px] font-black text-gray-500">ORANGE</p><p id="asset-orange" class="text-xs font-bold">0</p></div></div>
-                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🍎</span><div><p class="text-[8px] font-black text-gray-500">APPLE</p><p id="asset-apple" class="text-xs font-bold">0</p></div></div>
-                <div class="glass p-4 rounded-3xl flex items-center gap-3"><span>🥭</span><div><p class="text-[8px] font-black text-gray-500">MANGO</p><p id="asset-mangga" class="text-xs font-bold">0</p></div></div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3">
+                    <span class="text-xl">🍌</span>
+                    <div><p class="text-[8px] font-black text-gray-500">BANANA LEAF</p><p id="asset-banana" class="text-xs font-bold text-white">0</p></div>
+                </div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3">
+                    <span class="text-xl">🍊</span>
+                    <div><p class="text-[8px] font-black text-gray-500">ORANGE LEAF</p><p id="asset-orange" class="text-xs font-bold text-white">0</p></div>
+                </div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3">
+                    <span class="text-xl">🍎</span>
+                    <div><p class="text-[8px] font-black text-gray-500">APPLE LEAF</p><p id="asset-apple" class="text-xs font-bold text-white">0</p></div>
+                </div>
+                <div class="glass p-4 rounded-3xl flex items-center gap-3">
+                    <span class="text-xl">🥭</span>
+                    <div><p class="text-[8px] font-black text-gray-500">MANGO LEAF</p><p id="asset-mangga" class="text-xs font-bold text-white">0</p></div>
+                </div>
             </div>
 
-            <div class="glass p-6 rounded-[2.5rem] border-t-2 border-emerald-500/20 text-center">
-                <p class="text-[9px] font-black text-gray-500 uppercase mb-4">Last 3 Activities</p>
+            <div class="glass p-5 rounded-[2.5rem] text-center border-t border-white/5">
+                <p class="text-[9px] font-black text-gray-500 uppercase mb-4 tracking-widest">Last 3 Activities</p>
                 <div id="activity-list" class="space-y-2 text-[10px]">
-                    <div class="flex justify-between opacity-50 italic"><span>No recent activity...</span></div>
+                    <p class="text-gray-700 italic">History will appear here...</p>
                 </div>
             </div>
         </div>
 
-        <div id="farming" class="tab-content space-y-5">
-            <div class="glass p-5 rounded-[2.5rem] border-b-4 border-blue-500 bg-blue-500/5 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-400"><i class="fas fa-droplet"></i></div>
-                    <div>
-                        <p class="text-[9px] font-black text-white uppercase">Daily Water</p>
-                        <p id="timer-daily" class="text-[8px] text-blue-400 font-mono">READY</p>
+        <div id="farming" class="tab-content space-y-6">
+            <div class="glass p-5 rounded-[2.5rem] border-b-4 border-blue-500 bg-blue-500/5 relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center text-blue-400 text-2xl relative">
+                            <i class="fas fa-droplet animate-bounce"></i>
+                            <span id="water-active-dot" class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full hidden border-2 border-[#05080f]"></span>
+                        </div>
+                        <div>
+                            <h3 class="text-[10px] font-black uppercase text-white tracking-widest">Daily Water Booster</h3>
+                            <p id="timer-daily" class="text-[9px] text-blue-400 font-mono">READY TO USE</p>
+                        </div>
                     </div>
+                    <button onclick="triggerAd('DAILY')" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-black text-[10px] uppercase shadow-lg shadow-blue-900/40 btn-press">Use</button>
                 </div>
-                <button onclick="triggerAd('DAILY')" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase">Use</button>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="glass rounded-[2rem] p-5 text-center relative border-t-4 border-emerald-500">
                     <span class="status-badge bg-emerald-500 text-black">FREE</span>
-                    <div class="text-4xl my-3">🍌</div>
-                    <p class="text-[9px] font-black text-gray-500 uppercase">Pisang</p>
-                    <p class="text-[10px] text-emerald-400 font-mono mb-3">30 Pts <span class="booster-label hidden text-blue-400">+6</span></p>
-                    <button onclick="triggerAd('BANANA')" class="w-full py-2.5 bg-emerald-600 text-black font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                    <div class="text-5xl my-4 hover:scale-110 transition-transform">🍌</div>
+                    <h3 class="text-[10px] font-black uppercase text-gray-400">Pisang</h3>
+                    <p class="text-[11px] font-mono text-emerald-400 mb-4">30 Pts <span class="booster-label hidden text-blue-400">+6</span></p>
+                    <button onclick="triggerAd('BANANA')" class="w-full py-3 bg-emerald-600 text-black font-black text-[10px] rounded-xl uppercase btn-press">Harvest</button>
                 </div>
 
-                <div id="slot-jeruk" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
-                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
-                    <div class="text-4xl my-3">🍊</div>
-                    <p class="text-[9px] font-black text-gray-500">Jeruk</p>
-                    <button onclick="triggerAd('ORANGE')" class="hidden w-full py-2.5 bg-orange-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                <div id="slot-jeruk" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/10">
+                    <div class="lock-overlay absolute inset-0 flex flex-col items-center justify-center">
+                        <i class="fas fa-lock text-gray-600 mb-1"></i>
+                        <p class="text-[7px] font-black text-gray-600 uppercase">Basic Plan</p>
+                    </div>
+                    <div class="text-5xl my-4">🍊</div>
+                    <h3 class="text-[10px] font-black uppercase text-gray-400">Jeruk</h3>
+                    <p class="text-[11px] font-mono text-orange-400 mb-4">60 Pts</p>
+                    <button onclick="triggerAd('ORANGE')" class="hidden w-full py-3 bg-orange-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
                 </div>
 
-                <div id="slot-apel" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
-                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
-                    <div class="text-4xl my-3">🍎</div>
-                    <p class="text-[9px] font-black text-gray-500">Apel</p>
-                    <button onclick="triggerAd('APPLE')" class="hidden w-full py-2.5 bg-red-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                <div id="slot-apel" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/10">
+                    <div class="lock-overlay absolute inset-0 flex flex-col items-center justify-center">
+                        <i class="fas fa-lock text-gray-600 mb-1"></i>
+                        <p class="text-[7px] font-black text-gray-600 uppercase">Pro Plan</p>
+                    </div>
+                    <div class="text-5xl my-4">🍎</div>
+                    <h3 class="text-[10px] font-black uppercase text-gray-400">Apel</h3>
+                    <p class="text-[11px] font-mono text-red-500 mb-4">80 Pts</p>
+                    <button onclick="triggerAd('APPLE')" class="hidden w-full py-3 bg-red-600 text-white font-black text-[10px] rounded-xl uppercase">Harvest</button>
                 </div>
 
-                <div id="slot-mangga" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/5">
-                    <div class="lock-overlay absolute inset-0 flex items-center justify-center z-10"><i class="fas fa-lock text-gray-500"></i></div>
-                    <div class="text-4xl my-3">🥭</div>
-                    <p class="text-[9px] font-black text-gray-500">Mangga</p>
-                    <button onclick="triggerAd('MANGO')" class="hidden w-full py-2.5 bg-yellow-600 text-black font-black text-[10px] rounded-xl uppercase">Harvest</button>
+                <div id="slot-mangga" class="glass rounded-[2rem] p-5 text-center relative opacity-40 grayscale border-dashed border-2 border-white/10">
+                    <div class="lock-overlay absolute inset-0 flex flex-col items-center justify-center">
+                        <i class="fas fa-lock text-gray-600 mb-1"></i>
+                        <p class="text-[7px] font-black text-gray-600 uppercase">Master Plan</p>
+                    </div>
+                    <div class="text-5xl my-4">🥭</div>
+                    <h3 class="text-[10px] font-black uppercase text-gray-400">Mangga</h3>
+                    <p class="text-[11px] font-mono text-yellow-500 mb-4">100 Pts</p>
+                    <button onclick="triggerAd('MANGO')" class="hidden w-full py-3 bg-yellow-500 text-black font-black text-[10px] rounded-xl uppercase">Harvest</button>
                 </div>
             </div>
 
-            <button onclick="triggerAd('HOURLY')" class="glass p-5 rounded-[2.5rem] w-full border-l-4 border-purple-500 bg-purple-500/5 flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400 animate-spin"><i class="fas fa-spinner"></i></div>
+            <button onclick="triggerAd('HOURLY')" class="glass p-5 rounded-[2.5rem] w-full border-l-4 border-purple-500 bg-purple-500/5 flex justify-between items-center btn-press">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-purple-500/10 border-2 border-dashed border-purple-500 flex items-center justify-center text-purple-400 animate-[spin_10s_linear_infinite]">
+                        <i class="fas fa-spinner"></i>
+                    </div>
                     <div class="text-left">
-                        <p class="text-[9px] font-black text-white uppercase">Lucky Roulette</p>
-                        <p id="timer-hourly" class="text-[8px] text-purple-400 font-mono">SPIN NOW</p>
+                        <p class="text-[10px] font-black uppercase text-white tracking-widest">Mini Lucky Roulette</p>
+                        <p id="timer-hourly" class="text-[9px] text-purple-400 font-mono uppercase tracking-widest">Ready to Spin</p>
                     </div>
                 </div>
-                <i class="fas fa-circle-play text-xl text-purple-500"></i>
+                <i class="fas fa-circle-play text-2xl text-purple-500"></i>
             </button>
         </div>
 
-        <div id="shop" class="tab-content space-y-5">
-            <h2 class="text-xl font-black uppercase">Booster Shop</h2>
-            <div class="glass p-5 rounded-3xl flex items-center justify-between">
-                <div class="flex items-center gap-3"><span>🧪</span><div><p class="text-[10px] font-black">FERTILIZER</p><p class="text-[8px] text-gray-500">Harvest x2 Next Panen</p></div></div>
-                <button onclick="buyItem('FERT', 500)" class="bg-white text-black px-4 py-1.5 rounded-lg font-black text-[9px]">500 PT</button>
+        <div id="shop" class="tab-content space-y-6 text-center">
+            <h2 class="text-xl font-black uppercase tracking-tighter">Shop Boosters</h2>
+            <div class="space-y-4">
+                <div class="glass p-5 rounded-3xl flex items-center justify-between border-b-2 border-emerald-500/20">
+                    <div class="flex items-center gap-4 text-left">
+                        <span class="text-3xl">🧪</span>
+                        <div><p class="text-xs font-black uppercase">Fertilizer</p><p class="text-[8px] text-gray-500">Yield +50% for next panen</p></div>
+                    </div>
+                    <button onclick="buyItem('FERT', 500)" class="bg-white text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase">500 Pts</button>
+                </div>
+                </div>
+        </div>
+
+        <div id="plan" class="tab-content space-y-5">
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-black uppercase tracking-tighter">Upgrade Plan</h2>
+                <p class="text-[9px] text-gray-500 uppercase tracking-widest">Unlock more assets & harvest faster</p>
             </div>
-            <div class="glass p-5 rounded-3xl flex items-center justify-between opacity-50">
-                <div class="flex items-center gap-3"><span>🤖</span><div><p class="text-[10px] font-black">AUTO-DRONE</p><p class="text-[8px] text-gray-500">Passive Income 1h</p></div></div>
-                <button class="bg-white/10 text-white px-4 py-1.5 rounded-lg font-black text-[9px]">2.5k PT</button>
+            
+            <div class="space-y-4">
+                <div class="glass p-5 rounded-[2rem] border-l-4 border-emerald-500 flex justify-between items-center">
+                    <div><h4 class="text-xs font-black text-emerald-500">BASIC PLAN</h4><p class="text-[8px] text-gray-500 uppercase">Unlock Jeruk Slot + 1.1x Multiplier</p></div>
+                    <button id="plan-basic" onclick="buyPlan('BASIC', 5000)" class="bg-emerald-600 text-black px-5 py-2.5 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-emerald-900/40">5k Pts</button>
+                </div>
+                <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500 flex justify-between items-center">
+                    <div><h4 class="text-xs font-black text-blue-500">PRO PLAN</h4><p class="text-[8px] text-gray-500 uppercase">Unlock Apel Slot + 1.2x Multiplier</p></div>
+                    <button id="plan-pro" onclick="buyPlan('PRO', 15000)" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-blue-900/40">15k Pts</button>
+                </div>
+                <div class="glass p-5 rounded-[2.5rem] border-l-4 border-yellow-500 bg-yellow-500/5 flex justify-between items-center">
+                    <div><h4 class="text-xs font-black text-yellow-500 uppercase">Master Plan</h4><p class="text-[8px] text-gray-400 uppercase">Unlock All Slots + 1.5x Multiplier</p></div>
+                    <button id="plan-master" onclick="buyPlan('MASTER', 50000)" class="bg-yellow-500 text-black px-5 py-2.5 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-yellow-900/40">50k Pts</button>
+                </div>
             </div>
         </div>
 
-        <div id="plan" class="tab-content space-y-4">
-            <h2 class="text-xl font-black uppercase text-center">Membership</h2>
-            <div class="glass p-5 rounded-[2rem] border-l-4 border-emerald-500 flex justify-between items-center">
-                <div><h4 class="text-[10px] font-black text-emerald-500">BASIC</h4><p class="text-[8px] text-gray-500">Buka Jeruk + 1.1x Multiplier</p></div>
-                <button id="plan-basic" onclick="buyPlan('BASIC', 5000)" class="bg-emerald-600 text-black px-4 py-2 rounded-xl font-black text-[9px]">5k PT</button>
+        <div id="affiliate" class="tab-content space-y-5">
+            <div class="glass p-6 rounded-[2.5rem] bg-emerald-500/5 border-b-4 border-emerald-500/20">
+                <h2 class="text-lg font-black uppercase text-white mb-2">Affiliate Program</h2>
+                <div class="bg-emerald-500/10 rounded-2xl p-4 text-[9px] text-emerald-100/60 leading-relaxed">
+                    <p class="text-emerald-400 font-bold mb-1 uppercase tracking-widest">Rules & Commission:</p>
+                    <p>• Share link kamu dan dapatkan <span class="text-white font-black">10%</span> dari setiap panen temanmu!</p>
+                    <p>• Bonus bersifat instan dan otomatis masuk ke saldo koin kamu.</p>
+                </div>
             </div>
-            <div class="glass p-5 rounded-[2rem] border-l-4 border-blue-500 flex justify-between items-center">
-                <div><h4 class="text-[10px] font-black text-blue-500">PRO</h4><p class="text-[8px] text-gray-500">Buka Apel + 1.2x Multiplier</p></div>
-                <button id="plan-pro" onclick="buyPlan('PRO', 15000)" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-black text-[9px]">15k PT</button>
+
+            <div class="glass p-5 rounded-3xl space-y-3">
+                <p class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Your Referral Link</p>
+                <div class="flex gap-2">
+                    <input id="ref-link" type="text" readonly value="Loading..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[10px] font-mono text-emerald-400 outline-none">
+                    <button onclick="copyRef()" class="bg-emerald-600 text-black px-4 rounded-xl active:bg-white transition-colors"><i class="fas fa-copy"></i></button>
+                </div>
+                <button onclick="shareRef()" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] btn-press shadow-lg shadow-blue-900/30">
+                    <i class="fab fa-telegram-plane mr-2"></i> Invite Friends
+                </button>
             </div>
-            <div class="glass p-5 rounded-[2rem] border-l-4 border-yellow-500 flex justify-between items-center">
-                <div><h4 class="text-[10px] font-black text-yellow-500">MASTER</h4><p class="text-[8px] text-gray-500">All Slots + 1.5x Multiplier</p></div>
-                <button id="plan-master" onclick="buyPlan('MASTER', 50000)" class="bg-yellow-500 text-black px-4 py-2 rounded-xl font-black text-[9px]">50k PT</button>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="glass p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-black text-gray-500 uppercase">Invited</p>
+                    <p id="aff-total-invite" class="text-lg font-black text-white">0</p>
+                </div>
+                <div class="glass p-4 rounded-3xl text-center">
+                    <p class="text-[8px] font-black text-gray-500 uppercase">Earnings</p>
+                    <p id="aff-total-bonus" class="text-lg font-black text-emerald-400">0</p>
+                </div>
+            </div>
+
+            <div id="aff-list" class="space-y-2 pb-10">
+                <p class="text-[10px] text-gray-700 italic px-2">Active referrals will appear here...</p>
             </div>
         </div>
 
     </main>
 
-    <nav class="fixed bottom-6 left-6 right-6 h-18 glass rounded-[2rem] flex justify-around items-center z-[55] border-white/10 shadow-2xl">
+    <div class="fixed bottom-28 right-6 flex flex-col gap-3 z-[60]">
+        <a href="https://t.me/SeedFarmChannel" target="_blank" class="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center text-white shadow-xl shadow-sky-900/40 animate-bounce transition-transform active:scale-90">
+            <i class="fab fa-telegram-plane text-xl"></i>
+        </a>
+        <button onclick="openDoc('terms')" class="w-10 h-10 glass rounded-full flex items-center justify-center text-yellow-500 shadow-xl border border-yellow-500/20 active:scale-90">
+            <i class="fas fa-file-contract text-sm"></i>
+        </button>
+        <button onclick="openDoc('privacy')" class="w-10 h-10 glass rounded-full flex items-center justify-center text-emerald-400 shadow-xl border border-emerald-400/20 active:scale-90">
+            <i class="fas fa-shield-halved text-sm"></i>
+        </button>
+    </div>
+
+    <div id="wd-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="closeWithdraw()"></div>
+        <div class="glass w-full max-w-sm rounded-[2.5rem] p-6 relative border-t-4 border-blue-500 animate-fadeIn overflow-hidden">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-white uppercase tracking-tighter">Withdraw Wallet</h3>
+                <button onclick="closeWithdraw()" class="text-gray-500 p-2"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[8px] font-black text-gray-500 uppercase ml-2 mb-1 block tracking-widest">Wallet Address (DOGE/FP)</label>
+                    <input id="wd-address" type="text" placeholder="Enter Wallet Address" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs text-blue-400 focus:outline-none focus:border-blue-500 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[8px] font-black text-gray-500 uppercase ml-2 mb-1 block tracking-widest">Amount (Pts)</label>
+                        <input id="wd-amount" type="number" oninput="calcDoge(this.value)" placeholder="0" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs focus:outline-none font-mono text-white">
+                    </div>
+                    <div>
+                        <label class="text-[8px] font-black text-gray-500 uppercase ml-2 mb-1 block tracking-widest">You Receive</label>
+                        <input id="wd-doge" type="text" disabled placeholder="0.00 DOGE" class="w-full bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-3 text-xs font-mono text-emerald-400">
+                    </div>
+                </div>
+                <button onclick="processWD()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-blue-900/40 btn-press">Confirm Withdrawal</button>
+                <div class="bg-yellow-500/5 border border-yellow-500/10 rounded-2xl p-3 text-[7px] text-yellow-200/60 leading-relaxed uppercase tracking-tighter">
+                    <p>• Faucetpay (FP) Withdrawal is INSTANT.</p>
+                    <p>• Other Wallets take 2-3 days process.</p>
+                    <p class="text-yellow-500 font-bold mt-1">IMPORTANT: Wallet address is bound after first WD.</p>
+                </div>
+                <div id="wd-history" class="pt-2 text-[8px] space-y-1">
+                    <p class="text-gray-600 font-black uppercase tracking-widest">Last 3 Records:</p>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="doc-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="closeDoc()"></div>
+        <div class="glass w-full max-w-sm rounded-[2.5rem] p-6 relative border border-white/10 animate-fadeIn">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="doc-title" class="font-black text-white uppercase tracking-tighter">Document</h3>
+                <button onclick="closeDoc()" class="text-gray-500 p-2"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="doc-content" class="text-[10px] text-gray-400 leading-relaxed max-h-[60vh] overflow-y-auto pr-2 no-scrollbar"></div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-6 left-6 right-6 h-18 glass rounded-[2rem] flex justify-around items-center z-[55] border-white/10 shadow-2xl overflow-hidden">
         <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-emerald-500">
-            <i class="fas fa-user-circle text-lg"></i><span class="text-[7px] font-black uppercase">Profile</span>
+            <i class="fas fa-user-circle text-lg"></i><span class="text-[7px] font-black uppercase">Main</span>
         </button>
         <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
             <i class="fas fa-wheat-awn text-lg"></i><span class="text-[7px] font-black uppercase">Farm</span>
@@ -198,11 +310,14 @@
         <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
             <i class="fas fa-crown text-lg"></i><span class="text-[7px] font-black uppercase">Plan</span>
         </button>
+        <button onclick="showTab('affiliate', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-users-viewfinder text-lg"></i><span class="text-[7px] font-black uppercase">Affiliate</span>
+        </button>
     </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
@@ -221,29 +336,23 @@
 
         let lastDaily = 0, lastHourly = 0;
 
-        // UI SYSTEM
+        // UI TABS
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-emerald-500', 'text-gray-500'));
             if(btn) btn.classList.replace('text-gray-500', 'text-emerald-500');
-            toggleSidebar(true);
-        };
-
-        window.toggleSidebar = (forceClose = false) => {
-            const s = document.getElementById('sidebar'), o = document.getElementById('sidebar-overlay');
-            if(s.classList.contains('open') || forceClose) {
-                s.classList.remove('open'); o.classList.add('hidden');
-            } else {
-                s.classList.add('open'); o.classList.remove('hidden');
-            }
         };
 
         // LOAD DATA
         async function loadData() {
             const snap = await getDoc(userRef);
             if(!snap.exists()) {
-                await setDoc(userRef, { balance: 0, plan: 'FREE', banana_count: 0, orange_count: 0, apple_count: 0, mangga_count: 0, total_earned: 0 });
+                await setDoc(userRef, { 
+                    balance: 0, plan: 'FREE', 
+                    banana_count: 0, orange_count: 0, apple_count: 0, mangga_count: 0, 
+                    total_earned: 0, total_wd: 0, referral_count: 0, total_aff_bonus: 0
+                });
             }
             const d = snap.data();
             lastDaily = d.lastDaily || 0;
@@ -252,13 +361,20 @@
             document.getElementById('displayId').innerText = "ID: #" + userId;
             document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
             document.getElementById('top-balance').innerText = Math.floor(d.balance).toLocaleString();
-            document.getElementById('total-coin').innerText = Math.floor(d.balance).toLocaleString();
             document.getElementById('stat-earn').innerText = (d.total_earned || 0).toLocaleString();
+            document.getElementById('stat-wd').innerText = (d.total_wd || 0).toLocaleString();
             
+            // Assets
             document.getElementById('asset-banana').innerText = d.banana_count || 0;
             document.getElementById('asset-orange').innerText = d.orange_count || 0;
             document.getElementById('asset-apple').innerText = d.apple_count || 0;
             document.getElementById('asset-mangga').innerText = d.mangga_count || 0;
+
+            // Affiliate
+            const botUser = "SeedFarmProBot"; // Sesuaikan username bot
+            document.getElementById('ref-link').value = `https://t.me/${botUser}?start=${userId}`;
+            document.getElementById('aff-total-invite').innerText = d.referral_count || 0;
+            document.getElementById('aff-total-bonus').innerText = (d.total_aff_bonus || 0).toLocaleString();
 
             updateGameAccess(d.plan || 'FREE', lastDaily);
         }
@@ -266,6 +382,7 @@
         function updateGameAccess(plan, daily) {
             const isWater = (Date.now() - daily) < 86400000;
             document.querySelectorAll('.booster-label').forEach(l => isWater ? l.classList.remove('hidden') : l.classList.add('hidden'));
+            document.getElementById('water-active-dot').style.display = isWater ? 'block' : 'none';
 
             const unlock = (id) => {
                 const el = document.getElementById(id);
@@ -274,25 +391,29 @@
                 el.querySelector('button').classList.remove('hidden');
             };
 
-            if(plan === 'BASIC' || plan === 'PRO' || plan === 'MASTER') unlock('slot-jeruk');
-            if(plan === 'PRO' || plan === 'MASTER') unlock('slot-apel');
+            if(['BASIC', 'PRO', 'MASTER'].includes(plan)) unlock('slot-jeruk');
+            if(['PRO', 'MASTER'].includes(plan)) unlock('slot-apel');
             if(plan === 'MASTER') unlock('slot-mangga');
             
             ['basic', 'pro', 'master'].forEach(p => {
                 const b = document.getElementById('plan-'+p);
-                if(plan === p.toUpperCase()) { b.innerText = "ACTIVE"; b.disabled = true; b.style.opacity = "0.5"; }
+                if(plan === p.toUpperCase()) { 
+                    b.innerText = "ACTIVE"; b.disabled = true; b.classList.replace('bg-emerald-600', 'bg-gray-800');
+                }
             });
         }
 
-        // AD & REWARD SYSTEM
+        // AD & REWARD
         window.triggerAd = (type) => {
             const now = Date.now();
-            if(type === 'DAILY' && now - lastDaily < 86400000) return;
-            if(type === 'HOURLY' && now - lastHourly < 3600000) return;
+            if(type === 'DAILY' && now - lastDaily < 86400000) return tg.showAlert("Watering once per day!");
+            if(type === 'HOURLY' && now - lastHourly < 3600000) return tg.showAlert("Roulette ready in 1 hour!");
 
-            tg.showConfirm(`Watch ad to claim ${type}?`, (ok) => {
+            tg.showConfirm(`Watch Ad to Claim ${type}?`, (ok) => {
                 if(ok && typeof show_10426674 !== 'undefined') {
                     show_10426674().then(() => giveReward(type));
+                } else if(ok) {
+                    giveReward(type); // Fallback jika ad blocked
                 }
             });
         };
@@ -301,42 +422,96 @@
             const d = (await getDoc(userRef)).data();
             const isWater = (Date.now() - (d.lastDaily || 0)) < 86400000;
             let mult = d.plan === 'MASTER' ? 1.5 : d.plan === 'PRO' ? 1.2 : d.plan === 'BASIC' ? 1.1 : 1.0;
-            let water = isWater ? 1.2 : 1.0;
+            let waterBonus = isWater ? 1.2 : 1.0;
 
             let upd = {};
-            if(type === 'BANANA') {
-                let amt = Math.floor(30 * mult * water);
-                upd = { balance: increment(amt), banana_count: increment(1), total_earned: increment(amt) };
-            } else if(type === 'ORANGE') {
-                let amt = Math.floor(60 * mult * water);
-                upd = { balance: increment(amt), orange_count: increment(1), total_earned: increment(amt) };
+            if(['BANANA', 'ORANGE', 'APPLE', 'MANGO'].includes(type)) {
+                let basePrices = { BANANA: 30, ORANGE: 60, APPLE: 80, MANGO: 100 };
+                let amt = Math.floor(basePrices[type] * mult * waterBonus);
+                upd = { 
+                    balance: increment(amt), 
+                    [`${type.toLowerCase()}_count`]: increment(1), 
+                    total_earned: increment(amt) 
+                };
             } else if(type === 'DAILY') {
                 upd = { lastDaily: Date.now() };
             } else if(type === 'HOURLY') {
-                let r = Math.floor(Math.random() * 50) + 10;
+                let r = Math.floor(Math.random() * 91) + 10;
                 upd = { balance: increment(r), lastHourly: Date.now(), total_earned: increment(r) };
             }
 
             await updateDoc(userRef, upd);
-            tg.showAlert("Reward Claimed!");
+            tg.showAlert("Action Successful!");
             loadData();
         }
 
-        window.buyPlan = async (name, price) => {
+        // WALLET LOGIC
+        window.calcDoge = (v) => document.getElementById('wd-doge').value = (v * 0.0001).toFixed(4) + " DOGE";
+        window.openWithdraw = async () => {
             const d = (await getDoc(userRef)).data();
-            if(d.balance < price) return tg.showAlert("Insufficient coins!");
-            tg.showConfirm(`Upgrade to ${name}?`, async (ok) => {
-                if(ok) {
-                    await updateDoc(userRef, { balance: increment(-price), plan: name });
-                    loadData();
-                }
+            const addrInput = document.getElementById('wd-address');
+            if(d.wallet_address) { addrInput.value = d.wallet_address; addrInput.disabled = true; }
+            
+            const histDiv = document.getElementById('wd-history');
+            if(d.wd_history) {
+                histDiv.innerHTML = d.wd_history.slice(-3).reverse().map(h => `
+                    <div class="flex justify-between bg-white/5 p-2 rounded-lg text-gray-400">
+                        <span>${new Date(h.date).toLocaleDateString()}</span><span>${h.amount} Pts</span><span>${h.status}</span>
+                    </div>`).join('');
+            }
+            document.getElementById('wd-modal').classList.remove('hidden');
+        };
+        window.closeWithdraw = () => document.getElementById('wd-modal').classList.add('hidden');
+        window.processWD = async () => {
+            const amt = parseInt(document.getElementById('wd-amount').value);
+            const addr = document.getElementById('wd-address').value;
+            const d = (await getDoc(userRef)).data();
+            if(!addr || amt < 1000 || amt > d.balance) return tg.showAlert("Invalid Amount or Balance!");
+            
+            await updateDoc(userRef, { 
+                balance: increment(-amt), total_wd: increment(amt),
+                wallet_address: addr, wd_history: arrayUnion({date: Date.now(), amount: amt, status: 'PENDING'}) 
             });
+            tg.showAlert("WD Submitted!");
+            closeWithdraw(); loadData();
         };
 
+        // DOCS & AFFILIATE
+        window.openDoc = (type) => {
+            const title = document.getElementById('doc-title');
+            const content = document.getElementById('doc-content');
+            if(type === 'privacy') {
+                title.innerText = "Privacy Policy";
+                content.innerHTML = `<p>Kami hanya menyimpan data ID Telegram & Username untuk progres game. Alamat Wallet disimpan permanen untuk keamanan penarikan Anda.</p>`;
+            } else {
+                title.innerText = "Terms of Use";
+                content.innerHTML = `<p>Satu akun per orang. Penggunaan script/bot dilarang. Withdraw diproses manual kecuali Faucetpay. Keputusan admin mutlak.</p>`;
+            }
+            document.getElementById('doc-modal').classList.remove('hidden');
+        };
+        window.closeDoc = () => document.getElementById('doc-modal').classList.add('hidden');
+        window.copyRef = () => {
+            const link = document.getElementById('ref-link'); link.select();
+            navigator.clipboard.writeText(link.value); tg.showAlert("Link Copied!");
+        };
+        window.shareRef = () => {
+            const url = `https://t.me/share/url?url=${encodeURIComponent(document.getElementById('ref-link').value)}&text=${encodeURIComponent("Gabung di SeedFarm Pro! Panen koin & tarik DOGE!")}`;
+            window.open(url);
+        };
+
+        window.buyPlan = async (name, price) => {
+            const d = (await getDoc(userRef)).data();
+            if(d.balance < price) return tg.showAlert("Not enough coins!");
+            await updateDoc(userRef, { balance: increment(-price), plan: name });
+            tg.showAlert("Upgraded to " + name);
+            loadData();
+        };
+
+        // TIMER INTERVAL
         setInterval(() => {
             const now = Date.now();
-            updateTimer('timer-daily', 86400000, lastDaily, "READY");
-            updateTimer('timer-hourly', 3600000, lastHourly, "SPIN NOW");
+            updateTimer('timer-daily', 86400000, lastDaily, "READY TO USE");
+            updateTimer('timer-hourly', 3600000, lastHourly, "READY TO SPIN");
         }, 1000);
 
         function updateTimer(id, wait, last, readyText) {
