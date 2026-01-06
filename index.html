@@ -235,13 +235,33 @@
             tg.showAlert("Link copied to clipboard!");
         };
 
-        window.processWithdraw = () => {
-            tg.showPopup({
-                title: 'Confirm Withdrawal',
-                message: 'Do you want to withdraw your coins to FaucetPay?',
-                buttons: [{text: 'Withdraw', type: 'ok'}, {text: 'Cancel', type: 'cancel'}]
+        window.processWithdraw = async () => {
+    const amount = document.getElementById('wd-amount').value;
+    const email = "EMAIL_USER_DARI_DB"; // Nanti kita ambil dari database
+
+    if (amount < 1000) {
+        return tg.showAlert("Minimum withdrawal is 1000 coins!");
+    }
+
+    tg.showConfirm("Do you want to withdraw " + amount + " coins?", async (confirm) => {
+        if (confirm) {
+            // Memanggil API yang kita buat di Vercel tadi
+            const response = await fetch('/api/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, amount, email })
             });
-        };
+
+            const result = await response.json();
+            if (result.success) {
+                tg.showAlert("Success! Coins sent to your FaucetPay.");
+            } else {
+                tg.showAlert("Failed: " + result.message);
+            }
+        }
+    });
+};
     </script>
 </body>
 </html>
+
