@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm Pro - Farming Simulator</title>
+    <title>SeedFarm Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <script src="https://adsgram.ai/sdk-v1.js"></script>
     <script src="//libtl.com/sdk.js" data-zone="10426674" data-sdk="show_10426674"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #0b0f1a; color: white; font-family: 'Inter', sans-serif; }
@@ -15,18 +17,18 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .btn-locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
-        .gradient-text { background: linear-gradient(to right, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gradient-green { background: linear-gradient(135deg, #10b981, #059669); }
     </style>
 </head>
 <body class="pb-28 p-4">
 
     <header class="flex justify-between items-center mb-6">
         <div>
-            <h1 class="text-2xl font-black italic gradient-text">SEEDFARM</h1>
-            <p class="text-[9px] text-gray-500 uppercase tracking-widest">Digital Farming Sim</p>
+            <h1 class="text-2xl font-black italic text-green-400">SEEDFARM</h1>
+            <p class="text-[9px] text-gray-500 uppercase tracking-widest">Bot Active Platform</p>
         </div>
-        <div class="glass px-4 py-2 flex items-center gap-2 border-green-500/30">
-            <i class="fas fa-wallet text-yellow-500 text-xs"></i>
+        <div class="glass px-4 py-2 flex items-center gap-2">
+            <i class="fas fa-coins text-yellow-500 text-xs"></i>
             <span id="top-balance" class="font-mono text-sm font-bold">0</span>
         </div>
     </header>
@@ -38,30 +40,23 @@
                     <i class="fas fa-user"></i>
                 </div>
                 <div>
-                    <p id="displayUser" class="font-bold text-sm">@username</p>
+                    <p id="displayUser" class="font-bold text-sm">@loading</p>
                     <p id="displayId" class="text-[10px] text-gray-500 font-mono">#ID---------</p>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-4 text-center">
-                <div class="bg-white/5 p-3 rounded-2xl">
-                    <p class="text-[9px] text-gray-500 uppercase">Total Assets</p>
-                    <p id="total-coin" class="text-xl font-bold text-green-400">0</p>
-                </div>
-                <div class="bg-white/5 p-3 rounded-2xl">
-                    <p class="text-[9px] text-gray-500 uppercase">Farm Rank</p>
-                    <p class="text-xl font-bold text-blue-400">Novice</p>
-                </div>
+            <div class="text-center py-2">
+                <p class="text-[10px] text-gray-500 uppercase">Balance</p>
+                <p id="total-coin" class="text-3xl font-black text-green-400">0</p>
             </div>
         </div>
 
         <div class="glass p-5 space-y-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Withdrawal Portal</h3>
+            <h3 class="text-xs font-bold uppercase text-gray-400">Payment Info</h3>
             <div id="email-container" class="flex gap-2">
                 <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none focus:border-green-500">
                 <button onclick="bindEmail()" class="bg-green-600 text-black px-4 py-2 rounded-xl font-bold text-xs uppercase">Bind</button>
             </div>
             <p id="boundEmailDisplay" class="hidden text-green-400 font-mono text-center py-2 text-xs bg-green-500/5 rounded-xl border border-green-500/20 italic"></p>
-            <button onclick="tg.showAlert('Minimal withdrawal is 10,000 Coins.')" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-bold text-xs uppercase tracking-widest">Process Payment</button>
         </div>
     </div>
 
@@ -70,41 +65,38 @@
             <button id="btn-daily" onclick="startWaterfall('DAILY')" class="glass p-5 text-center bg-blue-500/5 border-blue-500/20">
                 <i class="fas fa-calendar-alt text-blue-400 mb-2"></i>
                 <p class="text-[10px] font-bold">DAILY BONUS</p>
-                <p id="timer-daily" class="text-[8px] text-gray-500 font-mono">CLAIM NOW</p>
+                <p id="timer-daily" class="text-[8px] text-gray-500 font-mono">CLAIM</p>
             </button>
             <button id="btn-hourly" onclick="startWaterfall('HOURLY')" class="glass p-5 text-center bg-purple-500/5 border-purple-500/20">
                 <i class="fas fa-bolt text-purple-400 mb-2"></i>
                 <p class="text-[10px] font-bold">HOURLY DROP</p>
-                <p id="timer-hourly" class="text-[8px] text-gray-500 font-mono">CLAIM NOW</p>
+                <p id="timer-hourly" class="text-[8px] text-gray-500 font-mono">CLAIM</p>
             </button>
         </div>
 
         <div class="glass p-8 text-center space-y-6 border-t-2 border-green-500">
-            <div class="relative w-24 h-24 mx-auto">
-                <div class="absolute inset-0 bg-green-500/20 blur-2xl rounded-full"></div>
-                <div class="relative w-full h-full bg-black/40 rounded-full flex items-center justify-center text-4xl border border-white/10">🌱</div>
-            </div>
+            <div class="text-4xl">🌱</div>
             <div>
-                <div class="text-4xl font-black font-mono"><span id="harvest-counter">40</span><span class="text-gray-600 text-xl">/40</span></div>
+                <div class="text-4xl font-black font-mono"><span id="harvest-counter">40</span>/40</div>
                 <div class="w-full bg-white/5 h-1.5 rounded-full mt-4 overflow-hidden">
-                    <div id="harvest-bar" class="h-full bg-green-500 shadow-[0_0_10px_#22c55e] transition-all duration-500"></div>
+                    <div id="harvest-bar" class="h-full bg-green-500 transition-all duration-500"></div>
                 </div>
             </div>
-            <button id="btn-harvest" onclick="startWaterfall('HARVEST')" class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-lg shadow-green-900/20">
-                Collect Harvest
+            <button id="btn-harvest" onclick="startWaterfall('HARVEST')" class="w-full py-4 rounded-2xl font-black uppercase text-sm">
+                Harvest Now
             </button>
         </div>
     </div>
 
-    <div id="plan" class="tab-content space-y-4 text-center">
-        <div class="glass p-8">
+    <div id="plan" class="tab-content space-y-4">
+        <div class="glass p-8 text-center">
             <i class="fas fa-lock text-3xl text-gray-600 mb-4"></i>
-            <h3 class="font-bold">INVESTMENT PLAN</h3>
-            <p class="text-xs text-gray-500 mt-2">Staking and investment features are coming soon. Increase your rank to unlock.</p>
+            <h3 class="font-bold uppercase">Staking Plan</h3>
+            <p class="text-[10px] text-gray-500 mt-2">Coming soon to the ecosystem.</p>
         </div>
     </div>
 
-    <nav class="fixed bottom-6 left-4 right-4 glass p-3 flex justify-around items-center z-50 shadow-2xl border-white/10">
+    <nav class="fixed bottom-6 left-4 right-4 glass p-3 flex justify-around items-center z-50">
         <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-green-400"><i class="fas fa-home"></i><span class="text-[9px] font-bold">HOME</span></button>
         <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-seedling"></i><span class="text-[9px] font-bold">FARM</span></button>
         <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-chart-line"></i><span class="text-[9px] font-bold">PLAN</span></button>
@@ -129,24 +121,20 @@
         const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504";
         const userRef = doc(db, "users", userId);
 
-        let userBalance = 0;
-        let lastDaily = 0;
-        let lastHourly = 0;
-        let harvestProgress = 40;
+        let lastDaily = 0, lastHourly = 0, harvestProgress = 40;
+
+        const ADSGRAM_ID = "19561"; // UPDATE ID AKTIF KAMU
 
         async function loadData() {
             const snap = await getDoc(userRef);
             if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
             const d = snap.data();
-            userBalance = d.balance || 0;
             lastDaily = d.lastDaily || 0;
             lastHourly = d.lastHourly || 0;
-
             document.getElementById('displayId').innerText = "#" + userId;
             document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-            document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
-            document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
-            
+            document.getElementById('total-coin').innerText = Math.floor(d.balance || 0).toLocaleString();
+            document.getElementById('top-balance').innerText = Math.floor(d.balance || 0).toLocaleString();
             if(d.withdrawEmail) {
                 document.getElementById('email-container').style.display = 'none';
                 document.getElementById('boundEmailDisplay').classList.remove('hidden');
@@ -154,31 +142,25 @@
             }
         }
 
-        // WATERFALL SYSTEM
         window.startWaterfall = (type) => {
             const now = Date.now();
             if(type === 'DAILY' && now - lastDaily < 86400000) return;
             if(type === 'HOURLY' && now - lastHourly < 3600000) return;
             if(type === 'HARVEST' && harvestProgress < 40) return;
 
-            tg.showConfirm("Watch ad to get reward?", (ok) => {
+            tg.showConfirm("Watch ad to claim coins?", (ok) => {
                 if(ok) {
-                    const rand = Math.random();
-                    if(rand > 0.5) {
-                        const AdController = window.Adsgram.init({ blockId: "20691" });
-                        AdController.show().then(() => { giveReward(type); })
-                        .catch(() => { callMonetag(type); });
-                    } else {
-                        callMonetag(type);
-                    }
+                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_ID });
+                    AdController.show().then(() => { giveReward(type); })
+                    .catch(() => { 
+                        // FALLBACK KE MONETAG
+                        if(typeof show_10426674 !== 'undefined') {
+                            show_10426674().then(() => { giveReward(type); });
+                        }
+                    });
                 }
             });
         };
-
-        function callMonetag(type) {
-            show_10426674().then(() => { giveReward(type); })
-            .catch(() => { tg.showAlert("Ad failed. Try later."); });
-        }
 
         async function giveReward(type) {
             let amt = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
@@ -187,7 +169,7 @@
             if(type === 'HOURLY') upd.lastHourly = Date.now();
             if(type === 'HARVEST') harvestProgress = 0;
             await updateDoc(userRef, upd);
-            tg.showAlert("Success!");
+            tg.showAlert("Coins added!");
             loadData();
         }
 
@@ -197,17 +179,16 @@
             document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
             const btn = document.getElementById('btn-harvest');
             if (harvestProgress >= 40) {
-                btn.className = "w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm bg-green-500 text-black";
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase text-sm gradient-green text-black";
             } else {
-                btn.className = "w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm bg-gray-800 text-gray-500 btn-locked";
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase text-sm bg-gray-800 text-gray-500 btn-locked";
             }
             updateCD('DAILY', 'timer-daily', 'btn-daily', 86400000, lastDaily);
             updateCD('HOURLY', 'timer-hourly', 'btn-hourly', 3600000, lastHourly);
         }, 1000);
 
         function updateCD(type, textId, btnId, wait, last) {
-            const el = document.getElementById(textId);
-            const btn = document.getElementById(btnId);
+            const el = document.getElementById(textId), btn = document.getElementById(btnId);
             const diff = Date.now() - last;
             if (diff < wait) {
                 const rem = wait - diff;
@@ -215,7 +196,7 @@
                 el.innerText = `${h}h ${m}m ${s}s`;
                 btn.classList.add('btn-locked');
             } else {
-                el.innerText = type === 'DAILY' ? "+100 Coin" : "+50 Coin";
+                el.innerText = (type === 'DAILY') ? "+100 Coin" : "+50 Coin";
                 btn.classList.remove('btn-locked');
             }
         }
@@ -228,10 +209,10 @@
         };
 
         window.bindEmail = async () => {
-            const email = document.getElementById('bindEmailInput').value.trim();
-            if(!email.includes("@")) return tg.showAlert("Invalid Email!");
+            const email = document.getElementById('bindEmailInput').value;
+            if(!email.includes("@")) return tg.showAlert("Invalid email!");
             await updateDoc(userRef, { withdrawEmail: email });
-            tg.showAlert("Bound!");
+            tg.showAlert("Email Linked!");
             loadData();
         };
 
