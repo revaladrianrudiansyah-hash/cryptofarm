@@ -3,98 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm - Monetag Version</title>
+    <title>SeedFarm Pro - Farming Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
+    <script src="https://adsgram.ai/sdk-v1.js"></script>
     <script src="//libtl.com/sdk.js" data-zone="10426674" data-sdk="show_10426674"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; }
+        body { background-color: #0b0f1a; color: white; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.5rem; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .gradient-green { background: linear-gradient(135deg, #10b981, #059669); }
         .btn-locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
+        .gradient-text { background: linear-gradient(to right, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     </style>
 </head>
-<body class="pb-24 p-4">
+<body class="pb-28 p-4">
 
     <header class="flex justify-between items-center mb-6">
-        <h1 class="text-xl font-black text-green-400 italic uppercase">SeedFarm</h1>
-        <div class="glass px-3 py-1 flex items-center gap-2">
-            <i class="fas fa-coins text-yellow-400"></i>
-            <span id="top-balance" class="font-mono text-xs font-bold text-green-400">0</span>
+        <div>
+            <h1 class="text-2xl font-black italic gradient-text">SEEDFARM</h1>
+            <p class="text-[9px] text-gray-500 uppercase tracking-widest">Digital Farming Sim</p>
+        </div>
+        <div class="glass px-4 py-2 flex items-center gap-2 border-green-500/30">
+            <i class="fas fa-wallet text-yellow-500 text-xs"></i>
+            <span id="top-balance" class="font-mono text-sm font-bold">0</span>
         </div>
     </header>
 
     <div id="home" class="tab-content active space-y-4">
-        <div class="glass p-5 text-xs space-y-3">
-            <h3 class="text-green-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                <i class="fas fa-user-circle"></i> Account Info
-            </h3>
-            <div class="flex justify-between"><span class="text-gray-400">User ID:</span><span id="displayId" class="font-mono">#----</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Username:</span><span id="displayUser">@loading</span></div>
-            <div class="flex justify-between items-center py-2 border-y border-white/5">
-                <span class="text-gray-400 font-bold">Withdraw Acc:</span>
-                <div id="email-container" class="flex items-center gap-2">
-                    <input id="bindEmailInput" type="email" placeholder="Email FaucetPay" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white text-[10px]">
-                    <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold">BIND</button>
+        <div class="glass p-5 space-y-4">
+            <div class="flex items-center gap-3 border-b border-white/5 pb-3">
+                <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                    <i class="fas fa-user"></i>
                 </div>
-                <span id="boundEmailDisplay" class="hidden text-green-400 font-bold italic font-mono"></span>
+                <div>
+                    <p id="displayUser" class="font-bold text-sm">@username</p>
+                    <p id="displayId" class="text-[10px] text-gray-500 font-mono">#ID---------</p>
+                </div>
             </div>
-            <div class="text-center pt-2">
-                <p class="text-gray-500 text-[10px] uppercase">Balance</p>
-                <p class="text-3xl font-black text-green-400"><span id="total-coin">0</span></p>
+            <div class="grid grid-cols-2 gap-4 text-center">
+                <div class="bg-white/5 p-3 rounded-2xl">
+                    <p class="text-[9px] text-gray-500 uppercase">Total Assets</p>
+                    <p id="total-coin" class="text-xl font-bold text-green-400">0</p>
+                </div>
+                <div class="bg-white/5 p-3 rounded-2xl">
+                    <p class="text-[9px] text-gray-500 uppercase">Farm Rank</p>
+                    <p class="text-xl font-bold text-blue-400">Novice</p>
+                </div>
             </div>
         </div>
 
-        <div class="glass p-5 border-t-2 border-green-500 space-y-4">
-            <h3 class="font-bold text-xs uppercase">Withdrawal</h3>
-            <div class="relative mt-1">
-                <input id="wd-amount" type="number" oninput="updateDogeConv()" placeholder="Min 1000" class="w-full bg-black/60 border border-white/10 rounded-xl p-3 outline-none text-sm text-white font-bold">
-                <button onclick="setMaxWD()" class="absolute right-3 top-2.5 text-[10px] bg-green-600 px-3 py-1.5 rounded font-black text-black">MAX</button>
+        <div class="glass p-5 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Withdrawal Portal</h3>
+            <div id="email-container" class="flex gap-2">
+                <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-xs outline-none focus:border-green-500">
+                <button onclick="bindEmail()" class="bg-green-600 text-black px-4 py-2 rounded-xl font-bold text-xs uppercase">Bind</button>
             </div>
-            <input id="wd-conv" type="text" disabled placeholder="0.00000000 DOGE" class="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-green-400 font-mono">
-            <button onclick="tg.showAlert('Withdrawal processed manually by admin.')" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase">Withdraw Now</button>
+            <p id="boundEmailDisplay" class="hidden text-green-400 font-mono text-center py-2 text-xs bg-green-500/5 rounded-xl border border-green-500/20 italic"></p>
+            <button onclick="tg.showAlert('Minimal withdrawal is 10,000 Coins.')" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-bold text-xs uppercase tracking-widest">Process Payment</button>
         </div>
     </div>
 
     <div id="farming" class="tab-content space-y-4">
         <div class="grid grid-cols-2 gap-3">
-            <div id="btn-daily" onclick="claimWithMonetag('DAILY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-blue-900/20 border-blue-500/30 cursor-pointer">
-                <i class="fas fa-calendar-check text-blue-400 text-lg"></i>
-                <p class="text-[10px] font-bold uppercase">Daily</p>
-                <p id="timer-daily" class="text-[8px] text-white/70 font-mono">+100 Coin</p>
-            </div>
-            <div id="btn-hourly" onclick="claimWithMonetag('HOURLY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-purple-900/20 border-purple-500/30 cursor-pointer">
-                <i class="fas fa-bolt text-purple-400 text-lg"></i>
-                <p class="text-[10px] font-bold uppercase">Hourly</p>
-                <p id="timer-hourly" class="text-[8px] text-white/70 font-mono">+50 Coin</p>
-            </div>
+            <button id="btn-daily" onclick="startWaterfall('DAILY')" class="glass p-5 text-center bg-blue-500/5 border-blue-500/20">
+                <i class="fas fa-calendar-alt text-blue-400 mb-2"></i>
+                <p class="text-[10px] font-bold">DAILY BONUS</p>
+                <p id="timer-daily" class="text-[8px] text-gray-500 font-mono">CLAIM NOW</p>
+            </button>
+            <button id="btn-hourly" onclick="startWaterfall('HOURLY')" class="glass p-5 text-center bg-purple-500/5 border-purple-500/20">
+                <i class="fas fa-bolt text-purple-400 mb-2"></i>
+                <p class="text-[10px] font-bold">HOURLY DROP</p>
+                <p id="timer-hourly" class="text-[8px] text-gray-500 font-mono">CLAIM NOW</p>
+            </button>
         </div>
 
-        <div class="glass p-6 text-center space-y-6">
-            <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl mx-auto">🌱</div>
+        <div class="glass p-8 text-center space-y-6 border-t-2 border-green-500">
+            <div class="relative w-24 h-24 mx-auto">
+                <div class="absolute inset-0 bg-green-500/20 blur-2xl rounded-full"></div>
+                <div class="relative w-full h-full bg-black/40 rounded-full flex items-center justify-center text-4xl border border-white/10">🌱</div>
+            </div>
             <div>
-                <div class="text-4xl font-black"><span id="harvest-counter">0</span><span class="text-green-500/30 text-xl">/40</span></div>
-                <p class="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">Farming Progress</p>
+                <div class="text-4xl font-black font-mono"><span id="harvest-counter">40</span><span class="text-gray-600 text-xl">/40</span></div>
+                <div class="w-full bg-white/5 h-1.5 rounded-full mt-4 overflow-hidden">
+                    <div id="harvest-bar" class="h-full bg-green-500 shadow-[0_0_10px_#22c55e] transition-all duration-500"></div>
+                </div>
             </div>
-            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
-            </div>
-            <button id="btn-harvest" onclick="claimWithMonetag('HARVEST')" class="w-full py-4 rounded-xl font-bold uppercase text-sm">
-                Harvest Coin
+            <button id="btn-harvest" onclick="startWaterfall('HARVEST')" class="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-lg shadow-green-900/20">
+                Collect Harvest
             </button>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 w-full glass rounded-none border-t border-white/10 p-3 flex justify-around items-center z-50">
-        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-green-400"><i class="fas fa-home text-sm"></i><span class="text-[9px] font-bold">HOME</span></button>
-        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-seedling text-sm"></i><span class="text-[9px] font-bold">FARM</span></button>
-        <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-layer-group text-sm"></i><span class="text-[9px] font-bold">PLAN</span></button>
-        <button onclick="showTab('affiliate', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-users text-sm"></i><span class="text-[9px] font-bold">FRIENDS</span></button>
+    <div id="plan" class="tab-content space-y-4 text-center">
+        <div class="glass p-8">
+            <i class="fas fa-lock text-3xl text-gray-600 mb-4"></i>
+            <h3 class="font-bold">INVESTMENT PLAN</h3>
+            <p class="text-xs text-gray-500 mt-2">Staking and investment features are coming soon. Increase your rank to unlock.</p>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-6 left-4 right-4 glass p-3 flex justify-around items-center z-50 shadow-2xl border-white/10">
+        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-green-400"><i class="fas fa-home"></i><span class="text-[9px] font-bold">HOME</span></button>
+        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-seedling"></i><span class="text-[9px] font-bold">FARM</span></button>
+        <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-chart-line"></i><span class="text-[9px] font-bold">PLAN</span></button>
     </nav>
 
     <script type="module">
@@ -113,13 +126,13 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const tg = window.Telegram.WebApp;
-        const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504"; 
+        const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504";
         const userRef = doc(db, "users", userId);
 
         let userBalance = 0;
         let lastDaily = 0;
         let lastHourly = 0;
-        let harvestProgress = 40; // Selalu aktif saat awal masuk
+        let harvestProgress = 40;
 
         async function loadData() {
             const snap = await getDoc(userRef);
@@ -141,48 +154,53 @@
             }
         }
 
-        // FUNGSI UTAMA MONETAG
-        window.claimWithMonetag = (type) => {
+        // WATERFALL SYSTEM
+        window.startWaterfall = (type) => {
             const now = Date.now();
             if(type === 'DAILY' && now - lastDaily < 86400000) return;
             if(type === 'HOURLY' && now - lastHourly < 3600000) return;
             if(type === 'HARVEST' && harvestProgress < 40) return;
 
-            tg.showConfirm("Watch ad to get Reward?", (ok) => {
+            tg.showConfirm("Watch ad to get reward?", (ok) => {
                 if(ok) {
-                    // Langsung panggil Monetag sesuai data kamu
-                    show_10426674().then(async () => {
-                        let reward = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
-                        let updateData = { balance: increment(reward) };
-                        
-                        if(type === 'DAILY') updateData.lastDaily = now;
-                        if(type === 'HOURLY') updateData.lastHourly = now;
-                        if(type === 'HARVEST') harvestProgress = 0;
-
-                        await updateDoc(userRef, updateData);
-                        tg.showAlert("Success! Reward added.");
-                        loadData();
-                    }).catch(() => {
-                        tg.showAlert("Ad failed to load. Please try again.");
-                    });
+                    const rand = Math.random();
+                    if(rand > 0.5) {
+                        const AdController = window.Adsgram.init({ blockId: "20691" });
+                        AdController.show().then(() => { giveReward(type); })
+                        .catch(() => { callMonetag(type); });
+                    } else {
+                        callMonetag(type);
+                    }
                 }
             });
         };
+
+        function callMonetag(type) {
+            show_10426674().then(() => { giveReward(type); })
+            .catch(() => { tg.showAlert("Ad failed. Try later."); });
+        }
+
+        async function giveReward(type) {
+            let amt = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
+            let upd = { balance: increment(amt) };
+            if(type === 'DAILY') upd.lastDaily = Date.now();
+            if(type === 'HOURLY') upd.lastHourly = Date.now();
+            if(type === 'HARVEST') harvestProgress = 0;
+            await updateDoc(userRef, upd);
+            tg.showAlert("Success!");
+            loadData();
+        }
 
         setInterval(() => {
             if (harvestProgress < 40) harvestProgress += 0.25;
             document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
             document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
-            
             const btn = document.getElementById('btn-harvest');
             if (harvestProgress >= 40) {
-                btn.classList.add('gradient-green', 'text-black');
-                btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm bg-green-500 text-black";
             } else {
-                btn.classList.remove('gradient-green', 'text-black');
-                btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
+                btn.className = "w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm bg-gray-800 text-gray-500 btn-locked";
             }
-            
             updateCD('DAILY', 'timer-daily', 'btn-daily', 86400000, lastDaily);
             updateCD('HOURLY', 'timer-hourly', 'btn-hourly', 3600000, lastHourly);
         }, 1000);
@@ -213,7 +231,7 @@
             const email = document.getElementById('bindEmailInput').value.trim();
             if(!email.includes("@")) return tg.showAlert("Invalid Email!");
             await updateDoc(userRef, { withdrawEmail: email });
-            tg.showAlert("Saved!");
+            tg.showAlert("Bound!");
             loadData();
         };
 
