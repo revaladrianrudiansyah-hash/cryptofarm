@@ -3,73 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CryptoFarm - Premium</title>
+    <title>CryptoFarm - Full Version</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .gradient-green { background: linear-gradient(135deg, #10b981, #059669); }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        .floating { animation: float 3s ease-in-out infinite; }
     </style>
 </head>
-<body class="pb-24 p-4 space-y-4">
+<body class="pb-24 p-4">
 
-    <div class="glass p-5">
-        <h3 class="text-green-400 font-bold mb-4 text-xs tracking-widest uppercase flex items-center gap-2">
-            <i class="fas fa-user-circle"></i> Account Information
-        </h3>
-        <div class="space-y-3 text-xs">
-            <div class="flex justify-between"><span class="text-gray-400">User ID:</span><span id="displayId" class="font-mono">#----</span></div>
-            <div class="flex justify-between"><span class="text-gray-400">Username:</span><span id="displayUser">@loading</span></div>
-            
-            <div class="flex justify-between items-center py-2 border-y border-white/5">
-                <span class="text-gray-400">Withdraw Email:</span>
-                <div id="email-container" class="flex items-center gap-2">
-                    <input id="bindEmailInput" type="email" placeholder="Enter FaucetPay Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 text-[10px] outline-none focus:border-green-500">
-                    <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold text-[9px]">BIND</button>
-                </div>
-                <span id="boundEmailDisplay" class="hidden text-green-400 font-bold"></span>
-            </div>
-
-            <div class="text-center pt-2">
-                <p class="text-gray-500 text-[10px] uppercase tracking-widest">Total Balance</p>
-                <p class="text-3xl font-black text-green-400"><span id="total-coin">0</span> <span class="text-sm font-normal">COINS</span></p>
-            </div>
+    <header class="flex justify-between items-center mb-6">
+        <h1 class="text-xl font-black text-green-400 italic">CRYPTO FARM</h1>
+        <div class="glass px-3 py-1 flex items-center gap-2">
+            <i class="fas fa-coins text-yellow-400 text-xs"></i>
+            <span id="header-balance" class="font-mono text-xs font-bold text-green-400">0</span>
         </div>
-    </div>
+    </header>
 
-    <div class="glass p-5 border-t-2 border-green-500">
-        <h3 class="font-bold mb-4 text-xs tracking-widest uppercase text-white">Withdrawal</h3>
-        <div class="space-y-4">
-            <div>
-                <label class="text-[9px] text-gray-500 uppercase font-bold ml-1">Withdraw Amount</label>
-                <div class="relative mt-1">
-                    <input id="wd-amount" type="number" oninput="updateDogeConv()" placeholder="Min. 1000" class="w-full bg-black/60 border border-white/10 rounded-xl p-3 outline-none focus:border-green-500 text-sm text-white">
-                    <button onclick="setMaxWD()" class="absolute right-3 top-2.5 text-[9px] bg-green-600 px-2 py-1 rounded font-black text-black uppercase">Max</button>
+    <main>
+        
+        <div id="home" class="tab-content active space-y-4">
+            <div class="glass p-5">
+                <h3 class="text-green-400 font-bold mb-4 text-xs tracking-widest uppercase flex items-center gap-2">
+                    <i class="fas fa-user-circle"></i> Account Information
+                </h3>
+                <div class="space-y-3 text-xs">
+                    <div class="flex justify-between"><span class="text-gray-400">User ID:</span><span id="displayId" class="font-mono">#----</span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Username:</span><span id="displayUser">@loading</span></div>
+                    <div class="flex justify-between items-center py-2 border-y border-white/5">
+                        <span class="text-gray-400">Withdraw Email:</span>
+                        <div id="email-container" class="flex items-center gap-2">
+                            <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 text-[10px] outline-none w-32">
+                            <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold text-[9px]">BIND</button>
+                        </div>
+                        <span id="boundEmailDisplay" class="hidden text-green-400 font-bold"></span>
+                    </div>
+                    <div class="text-center pt-2">
+                        <p class="text-gray-500 text-[10px] uppercase">Total Balance</p>
+                        <p class="text-3xl font-black text-green-400"><span id="total-coin">0</span> <span class="text-sm font-normal">COINS</span></p>
+                    </div>
                 </div>
             </div>
-            
-            <div>
-                <label class="text-[9px] text-gray-500 uppercase font-bold ml-1">You will receive (Est.)</label>
-                <input id="wd-conv" type="text" disabled placeholder="0.00000000 DOGE" class="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-green-400 font-mono mt-1">
-            </div>
-            
-            <button onclick="processWithdraw()" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase tracking-widest active:scale-95 transition shadow-lg shadow-green-900/20">
-                Confirm Withdraw
-            </button>
-            <p class="text-[8px] text-gray-500 text-center italic">Rule: Min 1000. Daily 100 coins test available once per day.</p>
-        </div>
-    </div>
 
-    <div class="glass p-5">
-        <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-4 tracking-widest flex items-center gap-2">
-            <i class="fas fa-history"></i> Last 5 Withdrawals
-        </h3>
-        <div id="history-list" class="space-y-2">
-            <p id="no-history" class="text-center text-[10px] text-gray-600 italic">No transactions found.</p>
+            <div class="glass p-5 border-t-2 border-green-500">
+                <h3 class="font-bold mb-4 text-xs uppercase">Withdrawal</h3>
+                <div class="space-y-3">
+                    <div class="relative">
+                        <input id="wd-amount" type="number" oninput="updateDogeConv()" placeholder="Amount (Min 1000)" class="w-full bg-black/60 border border-white/10 rounded-xl p-3 outline-none text-sm">
+                        <button onclick="setMaxWD()" class="absolute right-3 top-2.5 text-[9px] bg-green-600 px-2 py-1 rounded font-black text-black">MAX</button>
+                    </div>
+                    <input id="wd-conv" type="text" disabled placeholder="0.00000000 DOGE" class="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-green-400 font-mono">
+                    <button onclick="processWithdraw()" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase shadow-lg">Confirm Withdraw</button>
+                </div>
+            </div>
+
+            <div class="glass p-5">
+                <h3 class="text-[10px] font-bold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                    <i class="fas fa-history"></i> Last 5 Withdrawals
+                </h3>
+                <div id="history-list" class="space-y-2 text-[9px]">
+                    <p id="no-history" class="text-center text-gray-600 italic">No transactions found.</p>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div id="farming" class="tab-content space-y-4">
+            <div class="glass p-10 text-center relative overflow-hidden">
+                <div class="mb-6 flex justify-center">
+                    <div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center floating text-4xl">
+                        🌱
+                    </div>
+                </div>
+                <div class="text-5xl font-black mb-1"><span id="harvest-counter">0</span><span class="text-sm text-green-500/40">/40</span></div>
+                <p class="text-[10px] text-gray-500 mb-6 tracking-widest uppercase italic">Mining coins slowly...</p>
+                <div class="w-full bg-white/5 h-2 rounded-full mb-8">
+                    <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all"></div>
+                </div>
+                <button id="btn-harvest" onclick="triggerHarvest()" class="w-full py-4 rounded-2xl bg-gray-700 text-gray-500 font-bold text-sm uppercase" disabled>
+                    Not Ready
+                </button>
+            </div>
+        </div>
+
+        <div id="plan" class="tab-content glass p-10 text-center">
+            <i class="fas fa-rocket text-4xl mb-4 text-blue-400"></i>
+            <h2 class="font-bold">Upgrade Plan</h2>
+            <p class="text-xs text-gray-500 mt-2">Increase your farming speed. Coming Soon!</p>
+        </div>
+
+        <div id="affiliate" class="tab-content glass p-10 text-center">
+            <i class="fas fa-users text-4xl mb-4 text-purple-400"></i>
+            <h2 class="font-bold">Friends</h2>
+            <p class="text-xs text-gray-500 mt-2">Invite friends to get 10% bonus. Coming Soon!</p>
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 w-full glass rounded-none border-t border-white/10 p-4 flex justify-around items-center z-50">
+        <button onclick="showTab('home')" class="nav-btn flex flex-col items-center gap-1 text-green-400">
+            <i class="fas fa-home"></i><span class="text-[9px] font-bold">HOME</span>
+        </button>
+        <button onclick="showTab('farming')" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-seedling"></i><span class="text-[9px] font-bold">FARM</span>
+        </button>
+        <button onclick="showTab('plan')" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-layer-group"></i><span class="text-[9px] font-bold">PLAN</span>
+        </button>
+        <button onclick="showTab('affiliate')" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
+            <i class="fas fa-users"></i><span class="text-[9px] font-bold">FRIENDS</span>
+        </button>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
@@ -93,12 +143,18 @@
         let userBalance = 0;
         let boundEmail = "";
         let lastWDDate = "";
+        let harvestProgress = 0;
 
-        // -- LOGIC: UPDATE DOGE CONVERSION --
+        window.showTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-green-400', 'text-gray-500'));
+            event.currentTarget.classList.replace('text-gray-500', 'text-green-400');
+        };
+
         window.updateDogeConv = () => {
             const amount = document.getElementById('wd-amount').value;
-            const dogePrice = 0.000014; // Contoh rate: koin ke DOGE
-            document.getElementById('wd-conv').value = amount ? (amount * dogePrice).toFixed(8) + " DOGE" : "";
+            document.getElementById('wd-conv').value = amount ? (amount * 0.000014).toFixed(8) + " DOGE" : "";
         };
 
         window.setMaxWD = () => {
@@ -106,84 +162,62 @@
             updateDogeConv();
         };
 
-        // -- LOGIC: BIND EMAIL --
         window.bindEmail = async () => {
             const email = document.getElementById('bindEmailInput').value.trim();
             if(!email.includes("@")) return tg.showAlert("Invalid Email!");
-            
-            tg.showConfirm("Are you sure? This email cannot be changed later!", async (ok) => {
+            tg.showConfirm("Bind this email permanently?", async (ok) => {
                 if(ok) {
                     await updateDoc(userRef, { withdrawEmail: email });
-                    tg.showAlert("Email Linked Successfully!");
+                    tg.showAlert("Email Bound!");
                     loadData();
                 }
             });
         };
 
-        // -- LOGIC: PROCESS WITHDRAW --
         window.processWithdraw = async () => {
             const amount = parseInt(document.getElementById('wd-amount').value);
             const today = new Date().toDateString();
-
-            if(!boundEmail) return tg.showAlert("Please bind your FaucetPay email first!");
-            if(isNaN(amount)) return tg.showAlert("Enter amount!");
-            if(amount > userBalance) return tg.showAlert("Insufficient balance!");
-
-            // Rule 100 Coin vs 1000 Coin
-            if (amount === 100) {
-                if(lastWDDate === today) return tg.showAlert("Daily 100 coin test already used!");
+            if(!boundEmail) return tg.showAlert("Bind your email first!");
+            if(amount === 100) {
+                if(lastWDDate === today) return tg.showAlert("Daily 100 coin limit reached!");
             } else if (amount < 1000) {
-                return tg.showAlert("Minimum regular withdrawal is 1000 coins!");
+                return tg.showAlert("Min withdraw 1000 coins!");
             }
+            if(amount > userBalance) return tg.showAlert("Insufficient coins!");
 
-            tg.showConfirm(`Withdraw ${amount} coins to ${boundEmail}?`, async (ok) => {
+            tg.showConfirm(`Withdraw ${amount} coins?`, async (ok) => {
                 if(ok) {
-                    try {
-                        const response = await fetch('/api/withdraw', {
-                            method: 'POST',
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({ userId, amount, email: boundEmail })
-                        });
-                        const res = await response.json();
-                        
-                        if(res.success) {
-                            // Save to History
-                            await addDoc(collection(db, "withdrawals"), {
-                                userId, amount, date: new Date().toLocaleString(), status: "Success"
-                            });
-                            // Update User
-                            await updateDoc(userRef, { 
-                                balance: increment(-amount),
-                                lastWithdrawDate: today
-                            });
-                            tg.showAlert("Sent! Check FaucetPay.");
-                            loadData();
-                        } else {
-                            tg.showAlert("Error: " + res.message);
-                        }
-                    } catch (e) { tg.showAlert("Connection Failed"); }
+                    const response = await fetch('/api/withdraw', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ userId, amount, email: boundEmail })
+                    });
+                    const res = await response.json();
+                    if(res.success) {
+                        await addDoc(collection(db, "withdrawals"), { userId, amount, date: new Date().toLocaleString(), status: "Success" });
+                        await updateDoc(userRef, { balance: increment(-amount), lastWithdrawDate: today });
+                        tg.showAlert("Success! Check FaucetPay.");
+                        loadData();
+                    } else { tg.showAlert("Failed: " + res.message); }
                 }
             });
         };
 
-        // -- LOGIC: LOAD DATA --
         async function loadData() {
             const snap = await getDoc(userRef);
-            if(snap.exists()){
-                const d = snap.data();
-                userBalance = d.balance || 0;
-                boundEmail = d.withdrawEmail || "";
-                lastWDDate = d.lastWithdrawDate || "";
-                
-                document.getElementById('total-coin').innerText = userBalance.toLocaleString();
-                document.getElementById('displayId').innerText = "#" + userId;
-                document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-                
-                if(boundEmail) {
-                    document.getElementById('email-container').classList.add('hidden');
-                    document.getElementById('boundEmailDisplay').classList.remove('hidden');
-                    document.getElementById('boundEmailDisplay').innerText = boundEmail;
-                }
+            if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "" });
+            const d = snap.data();
+            userBalance = d.balance || 0;
+            boundEmail = d.withdrawEmail || "";
+            lastWDDate = d.lastWithdrawDate || "";
+            document.getElementById('total-coin').innerText = userBalance.toLocaleString();
+            document.getElementById('header-balance').innerText = userBalance.toLocaleString();
+            document.getElementById('displayId').innerText = "#" + userId;
+            document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
+            if(boundEmail) {
+                document.getElementById('email-container').classList.add('hidden');
+                document.getElementById('boundEmailDisplay').classList.remove('hidden');
+                document.getElementById('boundEmailDisplay').innerText = boundEmail;
             }
             loadHistory();
         }
@@ -194,16 +228,36 @@
             const container = document.getElementById('history-list');
             if(!snap.empty) {
                 document.getElementById('no-history').style.display = 'none';
-                container.innerHTML = snap.docs.map(doc => {
-                    const h = doc.data();
-                    return `<div class="flex justify-between items-center bg-white/5 p-2 rounded text-[9px] border border-white/5">
-                        <span>${h.date}</span>
-                        <span class="font-bold text-green-400">${h.amount} COIN</span>
-                        <span class="text-gray-500 uppercase">${h.status}</span>
-                    </div>`;
-                }).join('');
+                container.innerHTML = snap.docs.map(doc => `
+                    <div class="flex justify-between bg-white/5 p-2 rounded border border-white/5">
+                        <span>${doc.data().date}</span>
+                        <span class="font-bold text-green-400">${doc.data().amount}</span>
+                    </div>`).join('');
             }
         }
+
+        // FARMING TIMER
+        setInterval(() => {
+            if (harvestProgress < 40) {
+                harvestProgress += 0.2; 
+                document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
+                document.getElementById('harvest-bar').style.width = (harvestProgress/40*100) + "%";
+                if (harvestProgress >= 40) {
+                    const btn = document.getElementById('btn-harvest');
+                    btn.disabled = false; btn.innerText = "READY TO HARVEST"; btn.classList.replace('bg-gray-700', 'gradient-green'); btn.classList.replace('text-gray-500', 'text-black');
+                }
+            }
+        }, 1000);
+
+        window.triggerHarvest = async () => {
+            await updateDoc(userRef, { balance: increment(40) });
+            harvestProgress = 0;
+            document.getElementById('btn-harvest').disabled = true;
+            document.getElementById('btn-harvest').innerText = "Not Ready";
+            document.getElementById('btn-harvest').classList.replace('gradient-green', 'bg-gray-700');
+            tg.showAlert("Harvested 40 Coins!");
+            loadData();
+        };
 
         tg.expand();
         loadData();
