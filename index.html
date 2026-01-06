@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CryptoFarm</title>
+    <title>SeedFarm</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://adsgram.ai/sdk-v1.js"></script>
@@ -16,7 +16,7 @@
         .gradient-green { background: linear-gradient(135deg, #10b981, #059669); }
         .daily-box { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); border: 1px solid #3b82f6; }
         .hourly-box { background: linear-gradient(135deg, #4c1d95, #6d28d9); border: 1px solid #8b5cf6; }
-        .btn-disabled { opacity: 0.5; pointer-events: none; }
+        .btn-locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
 <body class="pb-24 p-4">
@@ -81,35 +81,25 @@
         </div>
 
         <div class="glass p-6 text-center space-y-6">
-            <div class="relative inline-block mx-auto">
-                <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl">🌱</div>
-            </div>
+            <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl mx-auto">🌱</div>
             <div>
                 <div class="text-4xl font-black"><span id="harvest-counter">0</span><span class="text-green-500/30 text-xl">/40</span></div>
-                <p class="text-[9px] text-gray-500 tracking-widest uppercase mt-1">Farming in progress</p>
+                <p class="text-[9px] text-gray-500 uppercase mt-1">Farming in progress</p>
             </div>
             <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
             </div>
-            <button id="btn-harvest" onclick="doHarvest()" class="w-full py-4 rounded-xl bg-gray-700 text-gray-500 font-bold uppercase text-sm btn-disabled" disabled>
+            <button id="btn-harvest" onclick="doHarvest()" class="w-full py-4 rounded-xl bg-gray-700 text-gray-500 font-bold uppercase text-sm btn-locked" disabled>
                 Harvest Coin
             </button>
         </div>
     </div>
 
     <nav class="fixed bottom-0 left-0 w-full glass rounded-none border-t border-white/10 p-3 flex justify-around items-center z-50">
-        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-green-400">
-            <i class="fas fa-home text-sm"></i><span class="text-[9px] font-bold">HOME</span>
-        </button>
-        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-seedling text-sm"></i><span class="text-[9px] font-bold">FARM</span>
-        </button>
-        <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-layer-group text-sm"></i><span class="text-[9px] font-bold">PLAN</span>
-        </button>
-        <button onclick="showTab('affiliate', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500">
-            <i class="fas fa-users text-sm"></i><span class="text-[9px] font-bold">AFFILIATE</span>
-        </button>
+        <button onclick="showTab('home', this)" class="nav-btn flex flex-col items-center gap-1 text-green-400"><i class="fas fa-home text-sm"></i><span class="text-[9px] font-bold">HOME</span></button>
+        <button onclick="showTab('farming', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-seedling text-sm"></i><span class="text-[9px] font-bold">FARM</span></button>
+        <button onclick="showTab('plan', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-layer-group text-sm"></i><span class="text-[9px] font-bold">PLAN</span></button>
+        <button onclick="showTab('affiliate', this)" class="nav-btn flex flex-col items-center gap-1 text-gray-500"><i class="fas fa-users text-sm"></i><span class="text-[9px] font-bold">FRIENDS</span></button>
     </nav>
 
     <script type="module">
@@ -134,9 +124,112 @@
         let userBalance = 0;
         let boundEmail = "";
         let harvestProgress = 0;
-        window.lastDaily = 0;
-        window.lastHourly = 0;
+        let lastDaily = 0;
+        let lastHourly = 0;
 
+        // LOAD DATA UTAMA
+        async function loadData() {
+            try {
+                const snap = await getDoc(userRef);
+                if(!snap.exists()) {
+                    await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
+                }
+                const d = snap.data();
+                userBalance = d.balance || 0;
+                boundEmail = d.withdrawEmail || "";
+                lastDaily = d.lastDaily || 0;
+                lastHourly = d.lastHourly || 0;
+
+                // Update UI Home
+                document.getElementById('displayId').innerText = "#" + userId;
+                document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
+                document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
+                document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
+
+                if(boundEmail) {
+                    document.getElementById('email-container').style.display = 'none';
+                    document.getElementById('boundEmailDisplay').classList.remove('hidden');
+                    document.getElementById('boundEmailDisplay').innerText = boundEmail;
+                }
+                loadHistory();
+            } catch (e) { console.error("Load Error", e); }
+        }
+
+        // TIMER & HARVEST LOGIC
+        setInterval(() => {
+            if (harvestProgress < 40) {
+                harvestProgress += 0.25;
+                document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
+                document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
+                const btn = document.getElementById('btn-harvest');
+                if (harvestProgress >= 40) {
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
+                    btn.classList.add('gradient-green', 'text-black');
+                } else {
+                    btn.disabled = true;
+                    btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
+                    btn.classList.remove('gradient-green', 'text-black');
+                }
+            }
+            // Update Countdown Daily/Hourly
+            updateCountdownUI('DAILY', 'timer-daily', 'btn-daily', 24 * 60 * 60 * 1000, lastDaily);
+            updateCountdownUI('HOURLY', 'timer-hourly', 'btn-hourly', 60 * 60 * 1000, lastHourly);
+        }, 1000);
+
+        function updateCountdownUI(type, textId, btnId, waitTime, lastTime) {
+            const el = document.getElementById(textId);
+            const btn = document.getElementById(btnId);
+            const diff = Date.now() - lastTime;
+            if (diff < waitTime) {
+                const rem = waitTime - diff;
+                const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
+                el.innerText = `${h}h ${m}m ${s}s`;
+                btn.classList.add('btn-locked');
+            } else {
+                el.innerText = type === 'DAILY' ? "+100 Coin" : "+50 Coin";
+                btn.classList.remove('btn-locked');
+            }
+        }
+
+        // ADS CLAIM LOGIC
+        window.claimBonus = async (type) => {
+            const now = Date.now();
+            const wait = type === 'DAILY' ? 24*60*60*1000 : 60*60*1000;
+            const last = type === 'DAILY' ? lastDaily : lastHourly;
+            if (now - last < wait) return;
+
+            tg.showConfirm(`Watch ad to claim?`, (ok) => {
+                if (ok) {
+                    const AdController = window.Adsgram.init({ blockId: "20691" });
+                    AdController.show().then(async () => {
+                        const reward = type === 'DAILY' ? 100 : 50;
+                        const updateObj = { balance: increment(reward) };
+                        if(type === 'DAILY') updateObj.lastDaily = now;
+                        else updateObj.lastHourly = now;
+                        await updateDoc(userRef, updateObj);
+                        tg.showAlert("Success!");
+                        loadData();
+                    }).catch(() => tg.showAlert("Ad error/skipped!"));
+                }
+            });
+        };
+
+        window.doHarvest = async () => {
+            tg.showConfirm("Watch ad to harvest 40 coins?", (ok) => {
+                if (ok) {
+                    const AdController = window.Adsgram.init({ blockId: "20691" });
+                    AdController.show().then(async () => {
+                        await updateDoc(userRef, { balance: increment(40) });
+                        harvestProgress = 0;
+                        tg.showAlert("Harvest Success!");
+                        loadData();
+                    }).catch(() => tg.showAlert("Ad failed!"));
+                }
+            });
+        };
+
+        // NAV & WD FUNCTIONS
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -144,9 +237,17 @@
             btn.classList.replace('text-gray-500', 'text-green-400');
         };
 
+        window.bindEmail = async () => {
+            const email = document.getElementById('bindEmailInput').value.trim();
+            if(!email.includes("@")) return tg.showAlert("Invalid Email!");
+            await updateDoc(userRef, { withdrawEmail: email });
+            tg.showAlert("Saved!");
+            loadData();
+        };
+
         window.updateDogeConv = () => {
-            const amount = document.getElementById('wd-amount').value;
-            document.getElementById('wd-conv').value = amount ? (amount * 0.000014).toFixed(8) + " DOGE" : "";
+            const val = document.getElementById('wd-amount').value;
+            document.getElementById('wd-conv').value = val ? (val * 0.000014).toFixed(8) + " DOGE" : "";
         };
 
         window.setMaxWD = () => {
@@ -154,139 +255,13 @@
             updateDogeConv();
         };
 
-        window.bindEmail = async () => {
-            const email = document.getElementById('bindEmailInput').value.trim();
-            if(!email.includes("@")) return tg.showAlert("Invalid Email!");
-            tg.showConfirm("Bind this email permanently?", async (ok) => {
-                if(ok) {
-                    await updateDoc(userRef, { withdrawEmail: email });
-                    tg.showAlert("Email Saved!");
-                    loadData();
-                }
-            });
-        };
-
-        window.processWithdraw = async () => {
-            const amount = parseInt(document.getElementById('wd-amount').value);
-            const today = new Date().toDateString();
-            if(!boundEmail) return tg.showAlert("Bind your email in HOME tab first!");
-            if(amount > userBalance) return tg.showAlert("Insufficient balance!");
-
-            tg.showConfirm(`Withdraw ${amount} coins?`, async (ok) => {
-                if(ok) {
-                    const response = await fetch('/api/withdraw', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ userId, amount, email: boundEmail })
-                    });
-                    const res = await response.json();
-                    if(res.success) {
-                        await addDoc(collection(db, "withdrawals"), { userId, amount, date: new Date().toLocaleString() });
-                        await updateDoc(userRef, { balance: increment(-amount), lastWithdrawDate: today });
-                        tg.showAlert("Sent!");
-                        loadData();
-                    }
-                }
-            });
-        };
-
-        // --- ADSGRAM LOGIC ---
-        const AdController = window.Adsgram.init({ blockId: "20691" }); // Ganti dengan ID Adsgram kamu
-
-        window.claimBonus = async (type) => {
-            const now = Date.now();
-            const wait = type === 'DAILY' ? 24*60*60*1000 : 60*60*1000;
-            const last = type === 'DAILY' ? window.lastDaily : window.lastHourly;
-
-            if (now - last < wait) return tg.showAlert("Wait for countdown!");
-
-            tg.showConfirm(`Watch ad for reward?`, (ok) => {
-                if(ok) {
-                    AdController.show().then(async () => {
-                        const reward = type === 'DAILY' ? 100 : 50;
-                        const field = type === 'DAILY' ? { lastDaily: now } : { lastHourly: now };
-                        await updateDoc(userRef, { balance: increment(reward), ...field });
-                        tg.showAlert("Reward added!");
-                        loadData();
-                    }).catch(() => tg.showAlert("Ad skipped!"));
-                }
-            });
-        };
-
-        window.doHarvest = async () => {
-            tg.showConfirm("Watch ad to harvest coins?", (ok) => {
-                if(ok) {
-                    AdController.show().then(async () => {
-                        await updateDoc(userRef, { balance: increment(40) });
-                        harvestProgress = 0;
-                        tg.showAlert("Harvest Success!");
-                        loadData();
-                    }).catch(() => tg.showAlert("Finish ad first!"));
-                }
-            });
-        };
-
-        // --- TIMER & CD LOGIC ---
-        setInterval(() => {
-            if (harvestProgress < 40) {
-                harvestProgress += 0.25;
-                document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
-                document.getElementById('harvest-bar').style.width = (harvestProgress/40*100) + "%";
-                const b = document.getElementById('btn-harvest');
-                if(harvestProgress >= 40) { b.disabled = false; b.classList.remove('bg-gray-700', 'text-gray-500', 'btn-disabled'); b.classList.add('gradient-green', 'text-black'); }
-                else { b.disabled = true; b.classList.add('bg-gray-700', 'text-gray-500', 'btn-disabled'); b.classList.remove('gradient-green', 'text-black'); }
-            }
-            updateCD('DAILY', 'timer-daily', 24*60*60*1000, 'btn-daily');
-            updateCD('HOURLY', 'timer-hourly', 60*60*1000, 'btn-hourly');
-        }, 1000);
-
-        function updateCD(type, elId, wait, btnId) {
-            const last = type === 'DAILY' ? window.lastDaily : window.lastHourly;
-            const el = document.getElementById(elId);
-            const btn = document.getElementById(btnId);
-            const diff = Date.now() - last;
-            if (diff < wait) {
-                const rem = wait - diff;
-                const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
-                el.innerText = `${h}h ${m}m ${s}s`;
-                btn.classList.add('btn-disabled');
-            } else {
-                el.innerText = type === 'DAILY' ? "+100 Coin" : "+50 Coin";
-                btn.classList.remove('btn-disabled');
-            }
-        }
-
-        async function loadData() {
-            const snap = await getDoc(userRef);
-            if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
-            const d = snap.data();
-            userBalance = d.balance || 0;
-            boundEmail = d.withdrawEmail || "";
-            window.lastDaily = d.lastDaily || 0;
-            window.lastHourly = d.lastHourly || 0;
-            document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
-            document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
-            document.getElementById('displayId').innerText = "#" + userId;
-            document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-            if(boundEmail) {
-                document.getElementById('email-container').classList.add('hidden');
-                document.getElementById('boundEmailDisplay').classList.remove('hidden');
-                document.getElementById('boundEmailDisplay').innerText = boundEmail;
-            }
-            loadHistory();
-        }
-
         async function loadHistory() {
             const q = query(collection(db, "withdrawals"), where("userId", "==", userId), orderBy("date", "desc"), limit(5));
             const snap = await getDocs(q);
             const container = document.getElementById('history-list');
             if(!snap.empty) {
                 document.getElementById('no-history').style.display = 'none';
-                container.innerHTML = snap.docs.map(doc => `
-                    <div class="flex justify-between bg-white/5 p-2 rounded border border-white/5">
-                        <span>${doc.data().date}</span>
-                        <span class="font-bold text-green-400">${doc.data().amount}</span>
-                    </div>`).join('');
+                container.innerHTML = snap.docs.map(doc => `<div class="flex justify-between bg-white/5 p-2 rounded border border-white/5 text-[9px]"><span>${doc.data().date}</span><span class="text-green-400 font-bold">${doc.data().amount}</span></div>`).join('');
             }
         }
 
