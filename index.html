@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm</title>
+    <title>SeedFarm Waterfall Ads</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <script src="https://adsgram.ai/sdk-v1.js"></script>
+    <script src="//libtl.com/sdk.js" data-zone="10426674" data-sdk="show_10426674"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
@@ -39,10 +42,10 @@
             <div class="flex justify-between items-center py-2 border-y border-white/5">
                 <span class="text-gray-400 font-bold">Withdraw Acc:</span>
                 <div id="email-container" class="flex items-center gap-2">
-                    <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32">
+                    <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white">
                     <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold">BIND</button>
                 </div>
-                <span id="boundEmailDisplay" class="hidden text-green-400 font-bold italic"></span>
+                <span id="boundEmailDisplay" class="hidden text-green-400 font-bold italic font-mono"></span>
             </div>
             <div class="text-center pt-2">
                 <p class="text-gray-500 text-[10px] uppercase">Balance</p>
@@ -68,12 +71,12 @@
 
     <div id="farming" class="tab-content space-y-4">
         <div class="grid grid-cols-2 gap-3">
-            <div id="btn-daily" onclick="claimBonus('DAILY')" class="daily-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
+            <div id="btn-daily" onclick="startWaterfall('DAILY')" class="daily-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
                 <i class="fas fa-calendar-check text-white text-lg"></i>
                 <p class="text-[10px] font-bold">DAILY CLAIM</p>
                 <p id="timer-daily" class="text-[8px] text-white/70 font-mono">+100 Coin</p>
             </div>
-            <div id="btn-hourly" onclick="claimBonus('HOURLY')" class="hourly-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
+            <div id="btn-hourly" onclick="startWaterfall('HOURLY')" class="hourly-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
                 <i class="fas fa-bolt text-white text-lg"></i>
                 <p class="text-[10px] font-bold">HOURLY GIFT</p>
                 <p id="timer-hourly" class="text-[8px] text-white/70 font-mono">+50 Coin</p>
@@ -84,12 +87,12 @@
             <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl mx-auto">🌱</div>
             <div>
                 <div class="text-4xl font-black"><span id="harvest-counter">0</span><span class="text-green-500/30 text-xl">/40</span></div>
-                <p class="text-[9px] text-gray-500 uppercase mt-1">Farming in progress</p>
+                <p class="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">Farming in progress</p>
             </div>
             <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
             </div>
-            <button id="btn-harvest" onclick="doHarvest()" class="w-full py-4 rounded-xl bg-gray-700 text-gray-500 font-bold uppercase text-sm btn-locked" disabled>
+            <button id="btn-harvest" onclick="startWaterfall('HARVEST')" class="w-full py-4 rounded-xl bg-gray-700 text-gray-500 font-bold uppercase text-sm">
                 Harvest Coin
             </button>
         </div>
@@ -106,6 +109,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, where, limit, getDocs, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
+        // CONFIG FIREBASE (Dari Gambar Kamu)
         const firebaseConfig = {
             apiKey: "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
             authDomain: "cryptofarm-bd14a.firebaseapp.com",
@@ -118,71 +122,121 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const tg = window.Telegram.WebApp;
-        const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504";
+        const userId = tg.initDataUnsafe?.user?.id?.toString() || "7138574504"; 
         const userRef = doc(db, "users", userId);
 
         let userBalance = 0;
-        let boundEmail = "";
-        let harvestProgress = 0;
         let lastDaily = 0;
         let lastHourly = 0;
+        let harvestProgress = 40; // FITUR: Langsung aktif saat buka app
 
-        // LOAD DATA UTAMA
+        // CONFIG ADS (Dari Gambar Kamu)
+        const ADSGRAM_ID = "20691";
+        const MONETAG_ZONE = "10426674";
+
         async function loadData() {
-            try {
-                const snap = await getDoc(userRef);
-                if(!snap.exists()) {
-                    await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
-                }
-                const d = snap.data();
-                userBalance = d.balance || 0;
-                boundEmail = d.withdrawEmail || "";
-                lastDaily = d.lastDaily || 0;
-                lastHourly = d.lastHourly || 0;
+            const snap = await getDoc(userRef);
+            if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
+            const d = snap.data();
+            userBalance = d.balance || 0;
+            lastDaily = d.lastDaily || 0;
+            lastHourly = d.lastHourly || 0;
 
-                // Update UI Home
-                document.getElementById('displayId').innerText = "#" + userId;
-                document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-                document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
-                document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
-
-                if(boundEmail) {
-                    document.getElementById('email-container').style.display = 'none';
-                    document.getElementById('boundEmailDisplay').classList.remove('hidden');
-                    document.getElementById('boundEmailDisplay').innerText = boundEmail;
-                }
-                loadHistory();
-            } catch (e) { console.error("Load Error", e); }
+            document.getElementById('displayId').innerText = "#" + userId;
+            document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
+            document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
+            document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
+            
+            if(d.withdrawEmail) {
+                document.getElementById('email-container').style.display = 'none';
+                document.getElementById('boundEmailDisplay').classList.remove('hidden');
+                document.getElementById('boundEmailDisplay').innerText = d.withdrawEmail;
+            }
+            loadHistory();
         }
 
-        // TIMER & HARVEST LOGIC
-        setInterval(() => {
-            if (harvestProgress < 40) {
-                harvestProgress += 0.25;
-                document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
-                document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
-                const btn = document.getElementById('btn-harvest');
-                if (harvestProgress >= 40) {
-                    btn.disabled = false;
-                    btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
-                    btn.classList.add('gradient-green', 'text-black');
-                } else {
-                    btn.disabled = true;
-                    btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
-                    btn.classList.remove('gradient-green', 'text-black');
+        // --- SYSTEM WATERFALL ---
+        window.startWaterfall = (type) => {
+            const now = Date.now();
+            if(type === 'DAILY' && now - lastDaily < 86400000) return;
+            if(type === 'HOURLY' && now - lastHourly < 3600000) return;
+            if(type === 'HARVEST' && harvestProgress < 40) return;
+
+            tg.showConfirm("Watch ad to get reward?", (ok) => {
+                if(ok) {
+                    tg.showScanQrPopup({ text: "Loading Ad..." }); // Feedback visual
+                    setTimeout(() => tg.closeScanQrPopup(), 1000);
+
+                    // STEP 1: Coba Adsgram
+                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_ID });
+                    AdController.show().then(() => {
+                        giveReward(type);
+                    }).catch((err) => {
+                        console.log("Adsgram failed, switching to Monetag...");
+                        // STEP 2: Waterfall ke Monetag
+                        try {
+                            show_10426674().then(() => {
+                                giveReward(type);
+                            }).catch(() => {
+                                tg.showAlert("No ads available right now. Try again later.");
+                            });
+                        } catch(e) {
+                            tg.showAlert("Ad systems are offline.");
+                        }
+                    });
                 }
+            });
+        };
+
+        async function giveReward(type) {
+            let amount = 0;
+            let updateObj = { balance: increment(0) };
+            
+            if(type === 'DAILY') {
+                amount = 100;
+                updateObj = { balance: increment(100), lastDaily: Date.now() };
+            } else if(type === 'HOURLY') {
+                amount = 50;
+                updateObj = { balance: increment(50), lastHourly: Date.now() };
+            } else if(type === 'HARVEST') {
+                amount = 40;
+                updateObj = { balance: increment(40) };
+                harvestProgress = 0;
             }
-            // Update Countdown Daily/Hourly
-            updateCountdownUI('DAILY', 'timer-daily', 'btn-daily', 24 * 60 * 60 * 1000, lastDaily);
-            updateCountdownUI('HOURLY', 'timer-hourly', 'btn-hourly', 60 * 60 * 1000, lastHourly);
+
+            await updateDoc(userRef, updateObj);
+            tg.showAlert(`Success! +${amount} Coins`);
+            loadData();
+        }
+
+        // --- TIMER LOGIC ---
+        setInterval(() => {
+            if (harvestProgress < 40) harvestProgress += 0.25;
+            
+            document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
+            document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
+            
+            const btn = document.getElementById('btn-harvest');
+            if (harvestProgress >= 40) {
+                btn.disabled = false;
+                btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
+                btn.classList.add('gradient-green', 'text-black');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
+                btn.classList.remove('gradient-green', 'text-black');
+            }
+            
+            updateCD('DAILY', 'timer-daily', 'btn-daily', 86400000, lastDaily);
+            updateCD('HOURLY', 'timer-hourly', 'btn-hourly', 3600000, lastHourly);
         }, 1000);
 
-        function updateCountdownUI(type, textId, btnId, waitTime, lastTime) {
+        function updateCD(type, textId, btnId, wait, last) {
             const el = document.getElementById(textId);
             const btn = document.getElementById(btnId);
-            const diff = Date.now() - lastTime;
-            if (diff < waitTime) {
-                const rem = waitTime - diff;
+            const diff = Date.now() - last;
+            if (diff < wait) {
+                const rem = wait - diff;
                 const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000), s = Math.floor((rem%60000)/1000);
                 el.innerText = `${h}h ${m}m ${s}s`;
                 btn.classList.add('btn-locked');
@@ -192,44 +246,7 @@
             }
         }
 
-        // ADS CLAIM LOGIC
-        window.claimBonus = async (type) => {
-            const now = Date.now();
-            const wait = type === 'DAILY' ? 24*60*60*1000 : 60*60*1000;
-            const last = type === 'DAILY' ? lastDaily : lastHourly;
-            if (now - last < wait) return;
-
-            tg.showConfirm(`Watch ad to claim?`, (ok) => {
-                if (ok) {
-                    const AdController = window.Adsgram.init({ blockId: "20691" });
-                    AdController.show().then(async () => {
-                        const reward = type === 'DAILY' ? 100 : 50;
-                        const updateObj = { balance: increment(reward) };
-                        if(type === 'DAILY') updateObj.lastDaily = now;
-                        else updateObj.lastHourly = now;
-                        await updateDoc(userRef, updateObj);
-                        tg.showAlert("Success!");
-                        loadData();
-                    }).catch(() => tg.showAlert("Ad error/skipped!"));
-                }
-            });
-        };
-
-        window.doHarvest = async () => {
-            tg.showConfirm("Watch ad to harvest 40 coins?", (ok) => {
-                if (ok) {
-                    const AdController = window.Adsgram.init({ blockId: "20691" });
-                    AdController.show().then(async () => {
-                        await updateDoc(userRef, { balance: increment(40) });
-                        harvestProgress = 0;
-                        tg.showAlert("Harvest Success!");
-                        loadData();
-                    }).catch(() => tg.showAlert("Ad failed!"));
-                }
-            });
-        };
-
-        // NAV & WD FUNCTIONS
+        // --- OTHER FUNCTIONS ---
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -241,7 +258,7 @@
             const email = document.getElementById('bindEmailInput').value.trim();
             if(!email.includes("@")) return tg.showAlert("Invalid Email!");
             await updateDoc(userRef, { withdrawEmail: email });
-            tg.showAlert("Saved!");
+            tg.showAlert("Linked!");
             loadData();
         };
 
@@ -261,7 +278,7 @@
             const container = document.getElementById('history-list');
             if(!snap.empty) {
                 document.getElementById('no-history').style.display = 'none';
-                container.innerHTML = snap.docs.map(doc => `<div class="flex justify-between bg-white/5 p-2 rounded border border-white/5 text-[9px]"><span>${doc.data().date}</span><span class="text-green-400 font-bold">${doc.data().amount}</span></div>`).join('');
+                container.innerHTML = snap.docs.map(doc => `<div class="flex justify-between bg-white/5 p-2 rounded border border-white/5"><span>${doc.data().date}</span><span class="text-green-400 font-bold">${doc.data().amount}</span></div>`).join('');
             }
         }
 
