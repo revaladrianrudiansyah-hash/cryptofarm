@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm Waterfall Ads</title>
+    <title>SeedFarm Waterfall Fixed</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
@@ -12,13 +12,11 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .gradient-green { background: linear-gradient(135deg, #10b981, #059669); }
-        .daily-box { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); border: 1px solid #3b82f6; }
-        .hourly-box { background: linear-gradient(135deg, #4c1d95, #6d28d9); border: 1px solid #8b5cf6; }
         .btn-locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
@@ -42,7 +40,7 @@
             <div class="flex justify-between items-center py-2 border-y border-white/5">
                 <span class="text-gray-400 font-bold">Withdraw Acc:</span>
                 <div id="email-container" class="flex items-center gap-2">
-                    <input id="bindEmailInput" type="email" placeholder="FaucetPay Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white">
+                    <input id="bindEmailInput" type="email" placeholder="Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white">
                     <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold">BIND</button>
                 </div>
                 <span id="boundEmailDisplay" class="hidden text-green-400 font-bold italic font-mono"></span>
@@ -56,28 +54,23 @@
         <div class="glass p-5 border-t-2 border-green-500 space-y-4">
             <h3 class="font-bold text-xs uppercase">Withdrawal</h3>
             <div class="relative mt-1">
-                <input id="wd-amount" type="number" oninput="updateDogeConv()" placeholder="Amount (Min 1000)" class="w-full bg-black/60 border border-white/10 rounded-xl p-3 outline-none text-sm text-white font-bold">
+                <input id="wd-amount" type="number" oninput="updateDogeConv()" placeholder="Min 1000" class="w-full bg-black/60 border border-white/10 rounded-xl p-3 outline-none text-sm text-white font-bold">
                 <button onclick="setMaxWD()" class="absolute right-3 top-2.5 text-[10px] bg-green-600 px-3 py-1.5 rounded font-black text-black">MAX</button>
             </div>
             <input id="wd-conv" type="text" disabled placeholder="0.00000000 DOGE" class="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-green-400 font-mono">
-            <button onclick="processWithdraw()" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase tracking-widest">Withdraw Now</button>
-        </div>
-
-        <div class="glass p-5 space-y-3">
-            <h3 class="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2"><i class="fas fa-history"></i> Last 5 Withdrawals</h3>
-            <div id="history-list" class="space-y-2 text-[9px]"><p id="no-history" class="text-center text-gray-600 italic">No history.</p></div>
+            <button onclick="processWithdraw()" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase">Withdraw Now</button>
         </div>
     </div>
 
     <div id="farming" class="tab-content space-y-4">
         <div class="grid grid-cols-2 gap-3">
-            <div id="btn-daily" onclick="startWaterfall('DAILY')" class="daily-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
-                <i class="fas fa-calendar-check text-white text-lg"></i>
+            <div id="btn-daily" onclick="startWaterfall('DAILY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-blue-900/30 border-blue-500/50 cursor-pointer">
+                <i class="fas fa-calendar-check text-blue-400 text-lg"></i>
                 <p class="text-[10px] font-bold">DAILY CLAIM</p>
                 <p id="timer-daily" class="text-[8px] text-white/70 font-mono">+100 Coin</p>
             </div>
-            <div id="btn-hourly" onclick="startWaterfall('HOURLY')" class="hourly-box p-4 rounded-2xl text-center space-y-1 active:scale-95 transition cursor-pointer">
-                <i class="fas fa-bolt text-white text-lg"></i>
+            <div id="btn-hourly" onclick="startWaterfall('HOURLY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-purple-900/30 border-purple-500/50 cursor-pointer">
+                <i class="fas fa-bolt text-purple-400 text-lg"></i>
                 <p class="text-[10px] font-bold">HOURLY GIFT</p>
                 <p id="timer-hourly" class="text-[8px] text-white/70 font-mono">+50 Coin</p>
             </div>
@@ -87,7 +80,7 @@
             <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl mx-auto">🌱</div>
             <div>
                 <div class="text-4xl font-black"><span id="harvest-counter">0</span><span class="text-green-500/30 text-xl">/40</span></div>
-                <p class="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">Farming in progress</p>
+                <p class="text-[9px] text-gray-500 uppercase mt-1">Farming in progress</p>
             </div>
             <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
@@ -107,9 +100,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, where, limit, getDocs, orderBy, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, where, limit, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        // CONFIG FIREBASE (Dari Gambar Kamu)
         const firebaseConfig = {
             apiKey: "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
             authDomain: "cryptofarm-bd14a.firebaseapp.com",
@@ -128,60 +120,55 @@
         let userBalance = 0;
         let lastDaily = 0;
         let lastHourly = 0;
-        let harvestProgress = 40; // FITUR: Langsung aktif saat buka app
+        let harvestProgress = 40; // Default Aktif
 
-        // CONFIG ADS (Dari Gambar Kamu)
         const ADSGRAM_ID = "20691";
-        const MONETAG_ZONE = "10426674";
 
         async function loadData() {
-            const snap = await getDoc(userRef);
-            if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
-            const d = snap.data();
-            userBalance = d.balance || 0;
-            lastDaily = d.lastDaily || 0;
-            lastHourly = d.lastHourly || 0;
+            try {
+                const snap = await getDoc(userRef);
+                if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
+                const d = snap.data();
+                userBalance = d.balance || 0;
+                lastDaily = d.lastDaily || 0;
+                lastHourly = d.lastHourly || 0;
 
-            document.getElementById('displayId').innerText = "#" + userId;
-            document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-            document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
-            document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
-            
-            if(d.withdrawEmail) {
-                document.getElementById('email-container').style.display = 'none';
-                document.getElementById('boundEmailDisplay').classList.remove('hidden');
-                document.getElementById('boundEmailDisplay').innerText = d.withdrawEmail;
-            }
-            loadHistory();
+                document.getElementById('displayId').innerText = "#" + userId;
+                document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
+                document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
+                document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
+                
+                if(d.withdrawEmail) {
+                    document.getElementById('email-container').style.display = 'none';
+                    document.getElementById('boundEmailDisplay').classList.remove('hidden');
+                    document.getElementById('boundEmailDisplay').innerText = d.withdrawEmail;
+                }
+            } catch(e) { console.error(e); }
         }
 
-        // --- SYSTEM WATERFALL ---
+        // WATERFALL LOGIC TANPA QR POPUP
         window.startWaterfall = (type) => {
             const now = Date.now();
             if(type === 'DAILY' && now - lastDaily < 86400000) return;
             if(type === 'HOURLY' && now - lastHourly < 3600000) return;
             if(type === 'HARVEST' && harvestProgress < 40) return;
 
-            tg.showConfirm("Watch ad to get reward?", (ok) => {
+            tg.showConfirm("Watch ad to receive your reward?", (ok) => {
                 if(ok) {
-                    tg.showScanQrPopup({ text: "Loading Ad..." }); // Feedback visual
-                    setTimeout(() => tg.closeScanQrPopup(), 1000);
-
-                    // STEP 1: Coba Adsgram
+                    // Coba Adsgram
                     const AdController = window.Adsgram.init({ blockId: ADSGRAM_ID });
                     AdController.show().then(() => {
                         giveReward(type);
-                    }).catch((err) => {
-                        console.log("Adsgram failed, switching to Monetag...");
-                        // STEP 2: Waterfall ke Monetag
+                    }).catch(() => {
+                        // Gagal Adsgram -> Coba Monetag
                         try {
                             show_10426674().then(() => {
                                 giveReward(type);
                             }).catch(() => {
-                                tg.showAlert("No ads available right now. Try again later.");
+                                tg.showAlert("Ad not available. Try again later.");
                             });
                         } catch(e) {
-                            tg.showAlert("Ad systems are offline.");
+                            tg.showAlert("No ad network responding.");
                         }
                     });
                 }
@@ -189,40 +176,28 @@
         };
 
         async function giveReward(type) {
-            let amount = 0;
-            let updateObj = { balance: increment(0) };
+            let amount = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
+            let updateObj = { balance: increment(amount) };
             
-            if(type === 'DAILY') {
-                amount = 100;
-                updateObj = { balance: increment(100), lastDaily: Date.now() };
-            } else if(type === 'HOURLY') {
-                amount = 50;
-                updateObj = { balance: increment(50), lastHourly: Date.now() };
-            } else if(type === 'HARVEST') {
-                amount = 40;
-                updateObj = { balance: increment(40) };
-                harvestProgress = 0;
-            }
+            if(type === 'DAILY') updateObj.lastDaily = Date.now();
+            if(type === 'HOURLY') updateObj.lastHourly = Date.now();
+            if(type === 'HARVEST') harvestProgress = 0;
 
             await updateDoc(userRef, updateObj);
-            tg.showAlert(`Success! +${amount} Coins`);
+            tg.showAlert(`Success! You got ${amount} coins.`);
             loadData();
         }
 
-        // --- TIMER LOGIC ---
         setInterval(() => {
             if (harvestProgress < 40) harvestProgress += 0.25;
-            
             document.getElementById('harvest-counter').innerText = Math.floor(harvestProgress);
             document.getElementById('harvest-bar').style.width = (harvestProgress / 40 * 100) + "%";
             
             const btn = document.getElementById('btn-harvest');
             if (harvestProgress >= 40) {
-                btn.disabled = false;
                 btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
                 btn.classList.add('gradient-green', 'text-black');
             } else {
-                btn.disabled = true;
                 btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
                 btn.classList.remove('gradient-green', 'text-black');
             }
@@ -246,7 +221,6 @@
             }
         }
 
-        // --- OTHER FUNCTIONS ---
         window.showTab = (id, btn) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -258,29 +232,9 @@
             const email = document.getElementById('bindEmailInput').value.trim();
             if(!email.includes("@")) return tg.showAlert("Invalid Email!");
             await updateDoc(userRef, { withdrawEmail: email });
-            tg.showAlert("Linked!");
+            tg.showAlert("Email Linked!");
             loadData();
         };
-
-        window.updateDogeConv = () => {
-            const val = document.getElementById('wd-amount').value;
-            document.getElementById('wd-conv').value = val ? (val * 0.000014).toFixed(8) + " DOGE" : "";
-        };
-
-        window.setMaxWD = () => {
-            document.getElementById('wd-amount').value = Math.floor(userBalance);
-            updateDogeConv();
-        };
-
-        async function loadHistory() {
-            const q = query(collection(db, "withdrawals"), where("userId", "==", userId), orderBy("date", "desc"), limit(5));
-            const snap = await getDocs(q);
-            const container = document.getElementById('history-list');
-            if(!snap.empty) {
-                document.getElementById('no-history').style.display = 'none';
-                container.innerHTML = snap.docs.map(doc => `<div class="flex justify-between bg-white/5 p-2 rounded border border-white/5"><span>${doc.data().date}</span><span class="text-green-400 font-bold">${doc.data().amount}</span></div>`).join('');
-            }
-        }
 
         tg.expand();
         loadData();
