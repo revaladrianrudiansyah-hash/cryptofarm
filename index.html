@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SeedFarm Waterfall Fixed</title>
+    <title>SeedFarm - Monetag Version</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <script src="https://adsgram.ai/sdk-v1.js"></script>
     <script src="//libtl.com/sdk.js" data-zone="10426674" data-sdk="show_10426674"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background-color: #0f172a; color: white; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.25rem; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -40,7 +39,7 @@
             <div class="flex justify-between items-center py-2 border-y border-white/5">
                 <span class="text-gray-400 font-bold">Withdraw Acc:</span>
                 <div id="email-container" class="flex items-center gap-2">
-                    <input id="bindEmailInput" type="email" placeholder="Email" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white">
+                    <input id="bindEmailInput" type="email" placeholder="Email FaucetPay" class="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none w-32 text-white text-[10px]">
                     <button onclick="bindEmail()" class="bg-green-600 text-black px-2 py-1 rounded font-bold">BIND</button>
                 </div>
                 <span id="boundEmailDisplay" class="hidden text-green-400 font-bold italic font-mono"></span>
@@ -58,20 +57,20 @@
                 <button onclick="setMaxWD()" class="absolute right-3 top-2.5 text-[10px] bg-green-600 px-3 py-1.5 rounded font-black text-black">MAX</button>
             </div>
             <input id="wd-conv" type="text" disabled placeholder="0.00000000 DOGE" class="w-full bg-white/5 border border-white/5 rounded-xl p-3 text-sm text-green-400 font-mono">
-            <button onclick="processWithdraw()" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase">Withdraw Now</button>
+            <button onclick="tg.showAlert('Withdrawal processed manually by admin.')" class="w-full gradient-green py-4 rounded-2xl font-black text-black text-sm uppercase">Withdraw Now</button>
         </div>
     </div>
 
     <div id="farming" class="tab-content space-y-4">
         <div class="grid grid-cols-2 gap-3">
-            <div id="btn-daily" onclick="startWaterfall('DAILY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-blue-900/30 border-blue-500/50 cursor-pointer">
+            <div id="btn-daily" onclick="claimWithMonetag('DAILY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-blue-900/20 border-blue-500/30 cursor-pointer">
                 <i class="fas fa-calendar-check text-blue-400 text-lg"></i>
-                <p class="text-[10px] font-bold">DAILY CLAIM</p>
+                <p class="text-[10px] font-bold uppercase">Daily</p>
                 <p id="timer-daily" class="text-[8px] text-white/70 font-mono">+100 Coin</p>
             </div>
-            <div id="btn-hourly" onclick="startWaterfall('HOURLY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-purple-900/30 border-purple-500/50 cursor-pointer">
+            <div id="btn-hourly" onclick="claimWithMonetag('HOURLY')" class="glass p-4 rounded-2xl text-center space-y-1 bg-purple-900/20 border-purple-500/30 cursor-pointer">
                 <i class="fas fa-bolt text-purple-400 text-lg"></i>
-                <p class="text-[10px] font-bold">HOURLY GIFT</p>
+                <p class="text-[10px] font-bold uppercase">Hourly</p>
                 <p id="timer-hourly" class="text-[8px] text-white/70 font-mono">+50 Coin</p>
             </div>
         </div>
@@ -80,12 +79,12 @@
             <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-2xl mx-auto">🌱</div>
             <div>
                 <div class="text-4xl font-black"><span id="harvest-counter">0</span><span class="text-green-500/30 text-xl">/40</span></div>
-                <p class="text-[9px] text-gray-500 uppercase mt-1">Farming in progress</p>
+                <p class="text-[9px] text-gray-500 uppercase mt-1 tracking-widest">Farming Progress</p>
             </div>
             <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
                 <div id="harvest-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div>
             </div>
-            <button id="btn-harvest" onclick="startWaterfall('HARVEST')" class="w-full py-4 rounded-xl bg-gray-700 text-gray-500 font-bold uppercase text-sm">
+            <button id="btn-harvest" onclick="claimWithMonetag('HARVEST')" class="w-full py-4 rounded-xl font-bold uppercase text-sm">
                 Harvest Coin
             </button>
         </div>
@@ -100,7 +99,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, collection, query, where, limit, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBA0XxekNCYuBJVqLFWKhJYbIyEv7SGcOc",
@@ -120,73 +119,55 @@
         let userBalance = 0;
         let lastDaily = 0;
         let lastHourly = 0;
-        let harvestProgress = 40; // Default Aktif
-
-        const ADSGRAM_ID = "20691";
+        let harvestProgress = 40; // Selalu aktif saat awal masuk
 
         async function loadData() {
-            try {
-                const snap = await getDoc(userRef);
-                if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
-                const d = snap.data();
-                userBalance = d.balance || 0;
-                lastDaily = d.lastDaily || 0;
-                lastHourly = d.lastHourly || 0;
+            const snap = await getDoc(userRef);
+            if(!snap.exists()) await setDoc(userRef, { balance: 0, withdrawEmail: "", lastDaily: 0, lastHourly: 0 });
+            const d = snap.data();
+            userBalance = d.balance || 0;
+            lastDaily = d.lastDaily || 0;
+            lastHourly = d.lastHourly || 0;
 
-                document.getElementById('displayId').innerText = "#" + userId;
-                document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
-                document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
-                document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
-                
-                if(d.withdrawEmail) {
-                    document.getElementById('email-container').style.display = 'none';
-                    document.getElementById('boundEmailDisplay').classList.remove('hidden');
-                    document.getElementById('boundEmailDisplay').innerText = d.withdrawEmail;
-                }
-            } catch(e) { console.error(e); }
+            document.getElementById('displayId').innerText = "#" + userId;
+            document.getElementById('displayUser').innerText = "@" + (tg.initDataUnsafe?.user?.username || "Guest");
+            document.getElementById('total-coin').innerText = Math.floor(userBalance).toLocaleString();
+            document.getElementById('top-balance').innerText = Math.floor(userBalance).toLocaleString();
+            
+            if(d.withdrawEmail) {
+                document.getElementById('email-container').style.display = 'none';
+                document.getElementById('boundEmailDisplay').classList.remove('hidden');
+                document.getElementById('boundEmailDisplay').innerText = d.withdrawEmail;
+            }
         }
 
-        // WATERFALL LOGIC TANPA QR POPUP
-        window.startWaterfall = (type) => {
+        // FUNGSI UTAMA MONETAG
+        window.claimWithMonetag = (type) => {
             const now = Date.now();
             if(type === 'DAILY' && now - lastDaily < 86400000) return;
             if(type === 'HOURLY' && now - lastHourly < 3600000) return;
             if(type === 'HARVEST' && harvestProgress < 40) return;
 
-            tg.showConfirm("Watch ad to receive your reward?", (ok) => {
+            tg.showConfirm("Watch ad to get Reward?", (ok) => {
                 if(ok) {
-                    // Coba Adsgram
-                    const AdController = window.Adsgram.init({ blockId: ADSGRAM_ID });
-                    AdController.show().then(() => {
-                        giveReward(type);
+                    // Langsung panggil Monetag sesuai data kamu
+                    show_10426674().then(async () => {
+                        let reward = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
+                        let updateData = { balance: increment(reward) };
+                        
+                        if(type === 'DAILY') updateData.lastDaily = now;
+                        if(type === 'HOURLY') updateData.lastHourly = now;
+                        if(type === 'HARVEST') harvestProgress = 0;
+
+                        await updateDoc(userRef, updateData);
+                        tg.showAlert("Success! Reward added.");
+                        loadData();
                     }).catch(() => {
-                        // Gagal Adsgram -> Coba Monetag
-                        try {
-                            show_10426674().then(() => {
-                                giveReward(type);
-                            }).catch(() => {
-                                tg.showAlert("Ad not available. Try again later.");
-                            });
-                        } catch(e) {
-                            tg.showAlert("No ad network responding.");
-                        }
+                        tg.showAlert("Ad failed to load. Please try again.");
                     });
                 }
             });
         };
-
-        async function giveReward(type) {
-            let amount = (type === 'DAILY') ? 100 : (type === 'HOURLY') ? 50 : 40;
-            let updateObj = { balance: increment(amount) };
-            
-            if(type === 'DAILY') updateObj.lastDaily = Date.now();
-            if(type === 'HOURLY') updateObj.lastHourly = Date.now();
-            if(type === 'HARVEST') harvestProgress = 0;
-
-            await updateDoc(userRef, updateObj);
-            tg.showAlert(`Success! You got ${amount} coins.`);
-            loadData();
-        }
 
         setInterval(() => {
             if (harvestProgress < 40) harvestProgress += 0.25;
@@ -195,11 +176,11 @@
             
             const btn = document.getElementById('btn-harvest');
             if (harvestProgress >= 40) {
-                btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
                 btn.classList.add('gradient-green', 'text-black');
+                btn.classList.remove('bg-gray-700', 'text-gray-500', 'btn-locked');
             } else {
-                btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
                 btn.classList.remove('gradient-green', 'text-black');
+                btn.classList.add('bg-gray-700', 'text-gray-500', 'btn-locked');
             }
             
             updateCD('DAILY', 'timer-daily', 'btn-daily', 86400000, lastDaily);
@@ -232,7 +213,7 @@
             const email = document.getElementById('bindEmailInput').value.trim();
             if(!email.includes("@")) return tg.showAlert("Invalid Email!");
             await updateDoc(userRef, { withdrawEmail: email });
-            tg.showAlert("Email Linked!");
+            tg.showAlert("Saved!");
             loadData();
         };
 
